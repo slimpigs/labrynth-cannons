@@ -428,16 +428,96 @@ section.panel h2 .meta {
   .terminal-grid { grid-template-columns: 1fr; }
 }
 
-/* TARGET RETICLE block — large T readout */
+/* TARGET RETICLE block — large T readout with radar scope behind it */
 .total-block {
   text-align: center;
-  padding: 8px 0 14px;
+  padding: 18px 0 20px;
   border-top: 1px solid var(--cyan-deep);
   border-bottom: 1px solid var(--cyan-deep);
   margin-bottom: 18px;
   background: linear-gradient(180deg, rgba(0, 212, 255, 0) 0%, rgba(0, 212, 255, 0.06) 50%, rgba(0, 212, 255, 0) 100%);
   position: relative;
+  overflow: hidden;
 }
+
+/* ============================================================
+   RADAR SCOPE — sweeping reticle behind the Total readout.
+   Concentric rings + crosshairs + rotating cone sweep + pulse blips.
+   Pure CSS, no SVG. The big T sits above it (z-index).
+   ============================================================ */
+.radar-bg {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 220px; height: 220px;
+  margin: -110px 0 0 -110px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.radar-ring {
+  position: absolute;
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  border-radius: 50%;
+  box-shadow: inset 0 0 8px rgba(0, 212, 255, 0.10);
+}
+.radar-ring.r1 { inset: 0; }
+.radar-ring.r2 { inset: 28%; border-color: rgba(0, 212, 255, 0.14); }
+.radar-cross {
+  position: absolute;
+  background: rgba(0, 212, 255, 0.12);
+}
+.radar-cross.v { left: 50%; top: 4%; bottom: 4%; width: 1px; margin-left: -0.5px; }
+.radar-cross.h { top: 50%; left: 4%; right: 4%; height: 1px; margin-top: -0.5px; }
+
+/* The rotating sweep cone — a conic gradient that fades to transparent except
+   for a ~70° trailing wedge in cyan. Rotating the element rotates the wedge. */
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    transparent 290deg,
+    rgba(0, 212, 255, 0.10) 320deg,
+    rgba(0, 212, 255, 0.32) 350deg,
+    rgba(0, 212, 255, 0.55) 360deg
+  );
+  mix-blend-mode: screen;
+  animation: radarSweep 3.6s linear infinite;
+  filter: blur(0.5px);
+}
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Two pulsing blips at fixed positions — pings detected on the scope */
+.radar-blip {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--magenta-bright);
+  box-shadow: 0 0 6px var(--magenta-glow), 0 0 14px var(--magenta-glow);
+}
+.radar-blip.b1 {
+  top: 22%; left: 70%;
+  animation: blipPulse 3.6s ease-in-out infinite;
+}
+.radar-blip.b2 {
+  top: 68%; left: 28%;
+  animation: blipPulse 3.6s ease-in-out -1.8s infinite;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 6px var(--cyan-glow), 0 0 14px var(--cyan-glow);
+}
+@keyframes blipPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.4); }
+}
+
+/* When firing-ready, speed up the sweep — cannon is locked on */
+body.firing-ready .radar-sweep { animation-duration: 2.0s; }
+body.firing-ready .radar-ring { border-color: rgba(0, 212, 255, 0.35); }
 .total-readout {
   display: flex;
   align-items: baseline;
@@ -1415,13 +1495,22 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
       <span class="corner-tr"></span><span class="corner-bl"></span>
       <h2 data-i18n="h_state">Target Reticle</h2>
       <div class="total-block">
+        <div class="radar-bg" aria-hidden="true">
+          <span class="radar-ring r1"></span>
+          <span class="radar-ring r2"></span>
+          <span class="radar-cross v"></span>
+          <span class="radar-cross h"></span>
+          <span class="radar-sweep"></span>
+          <span class="radar-blip b1"></span>
+          <span class="radar-blip b2"></span>
+        </div>
         <div class="total-readout">
-          <span class="total-num empty" id="totalNum">0</span>
+          <span class="total-num" id="totalNum">12</span>
           <span class="total-suffix">T</span>
         </div>
         <div class="total-stepper-row">
           <button class="total-step" data-dir="-1" type="button" aria-label="Decrement total">−</button>
-          <input type="number" class="total-val" id="cTotal" value="0" min="0" max="60">
+          <input type="number" class="total-val" id="cTotal" value="12" min="0" max="60">
           <button class="total-step" data-dir="1" type="button" aria-label="Increment total">+</button>
         </div>
         <div class="total-caption" data-i18n="l_total">Total Cards · Field + Both Hands</div>
@@ -1660,6 +1749,7 @@ const XYZ_MAX    = 2;  // max copies per rank
 const FUSION_MAX = 1;  // max copies per level
 const DEFAULT_XYZ_PAIRS    = [3, 4, 5, 6];               // ranks that default to 2 copies
 const DEFAULT_FUSION_SOLOS = [1, 2, 3, 4, 5, 6];         // levels that default to 1 copy
+const DEFAULT_TOTAL = 12;  // typical opening-state total cards across both hands + field
 
 function buildDefaultCounts(range, defaults, max) {
   const out = {};
@@ -1670,7 +1760,7 @@ function buildDefaultCounts(range, defaults, max) {
 }
 
 const state = {
-  total: 0,
+  total: DEFAULT_TOTAL,
   xyzCount:    buildDefaultCounts(RANK_RANGE,  DEFAULT_XYZ_PAIRS,    XYZ_MAX),
   fusionCount: buildDefaultCounts(LEVEL_RANGE, DEFAULT_FUSION_SOLOS, FUSION_MAX),
   lang: 'zh',
@@ -2147,6 +2237,7 @@ if (btnResetArsenal) {
   btnResetArsenal.addEventListener('click', () => {
     state.xyzCount    = buildDefaultCounts(RANK_RANGE,  DEFAULT_XYZ_PAIRS,    XYZ_MAX);
     state.fusionCount = buildDefaultCounts(LEVEL_RANGE, DEFAULT_FUSION_SOLOS, FUSION_MAX);
+    state.total       = DEFAULT_TOTAL;
     renderArsenal();
     render();
     const flash = document.createElement('div');
