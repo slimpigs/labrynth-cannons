@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labrynth Cannons · Simultaneous Equation Firing Aid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LABRYNTH CANNONS — Simultaneous Equation Cannons firing aid.
+   Theme: gothic Victorian manor (Labrynth) × cannon energy.
+   Palette: deep velvet + wine red + ornate gold + ivory parchment.
+   ============================================================ */
+:root {
+  --void: #07020c;
+  --hall: #110618;
+  --wall: #1c0c26;
+  --frame: #3c1832;
+  --wine-deep: #4a0e26;
+  --wine: #780e2e;
+  --crimson: #b40036;
+  --blood: #e6386a;
+  --rose: #f87090;
+  --gold-deep: #6e4c1c;
+  --gold: #c89048;
+  --gold-bright: #f0c878;
+  --gold-pale: #f8e0a8;
+  --gold-glow: rgba(240, 200, 120, 0.55);
+  --ivory: #f4ecd4;
+  --parchment: #ddc78f;
+  --ash: #8a7468;
+  --ash-deep: #4a3a30;
+  --cannon: #6a48dc;
+  --cannon-bright: #a880ff;
+  --cannon-glow: rgba(168, 128, 255, 0.55);
+  --shadow: rgba(0, 0, 0, 0.55);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--void);
+  color: var(--ivory);
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 18% -5%, rgba(232, 184, 112, 0.10), transparent 55%),
+    radial-gradient(ellipse at 82% 0%, rgba(184, 0, 54, 0.10), transparent 50%),
+    radial-gradient(ellipse at 50% 110%, rgba(106, 72, 220, 0.06), transparent 60%),
+    linear-gradient(180deg, var(--void), #04010a 60%, var(--shadow));
+  z-index: -2;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(circle at 40px 40px, rgba(200, 144, 72, 0.04) 1px, transparent 2px),
+    radial-gradient(circle at 80px 80px, rgba(200, 144, 72, 0.03) 1px, transparent 2px);
+  background-size: 80px 80px, 160px 160px;
+  z-index: -1;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 30%, transparent 80%);
+  pointer-events: none;
+}
+
+.dust {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.dust span {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--gold-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 4px var(--gold-glow);
+  opacity: 0.35;
+  animation: drift 30s linear infinite;
+}
+.dust span:nth-child(1) { left: 8%;  top: -2%; animation-duration: 34s; animation-delay: -2s; }
+.dust span:nth-child(2) { left: 24%; top: -2%; animation-duration: 28s; animation-delay: -12s; transform: scale(0.6); }
+.dust span:nth-child(3) { left: 38%; top: -2%; animation-duration: 40s; animation-delay: -6s; transform: scale(1.4); }
+.dust span:nth-child(4) { left: 52%; top: -2%; animation-duration: 32s; animation-delay: -22s; }
+.dust span:nth-child(5) { left: 68%; top: -2%; animation-duration: 36s; animation-delay: -4s; transform: scale(0.8); }
+.dust span:nth-child(6) { left: 82%; top: -2%; animation-duration: 30s; animation-delay: -16s; }
+.dust span:nth-child(7) { left: 95%; top: -2%; animation-duration: 38s; animation-delay: -8s; transform: scale(1.2); }
+@keyframes drift {
+  0%   { transform: translateY(0)   rotate(0deg);   opacity: 0; }
+  10%  { opacity: 0.4; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(110vh) rotate(180deg); opacity: 0; }
+}
+
+.hall {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 28px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 28px 12px 24px;
+  position: relative;
+}
+.welcome::before, .welcome::after {
+  content: '';
+  position: absolute;
+  left: 12%; right: 12%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-deep) 20%,
+    var(--gold) 50%,
+    var(--gold-deep) 80%,
+    transparent
+  );
+}
+.welcome::before { top: 0; }
+.welcome::after  { bottom: 0; }
+
+.crest {
+  font-size: 28px;
+  color: var(--gold-bright);
+  text-shadow:
+    0 0 8px var(--gold-glow),
+    0 0 18px rgba(232, 184, 112, 0.3);
+  margin-bottom: 4px;
+  display: inline-block;
+  animation: candleFlicker 4s ease-in-out infinite;
+}
+@keyframes candleFlicker {
+  0%, 100% { opacity: 0.95; text-shadow: 0 0 8px var(--gold-glow), 0 0 16px rgba(232, 184, 112, 0.25); transform: scale(1); }
+  43%      { opacity: 0.85; transform: scale(0.98); }
+  44%, 46% { opacity: 1; text-shadow: 0 0 14px var(--gold-glow), 0 0 28px rgba(232, 184, 112, 0.45); transform: scale(1.02); }
+  45%      { opacity: 0.78; }
+  60%      { opacity: 1; }
+}
+
+.welcome h1 {
+  font-family: 'Cinzel', 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 34px;
+  letter-spacing: 0.18em;
+  color: transparent;
+  background: linear-gradient(
+    180deg,
+    var(--gold-pale) 0%,
+    var(--gold-bright) 35%,
+    var(--gold) 65%,
+    var(--gold-deep) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter:
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 12px rgba(232, 184, 112, 0.35))
+    drop-shadow(0 0 30px rgba(180, 0, 54, 0.2));
+  text-transform: uppercase;
+  margin: 8px 0 6px;
+  line-height: 1.05;
+}
+
+.welcome .subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  color: var(--parchment);
+  margin-bottom: 18px;
+}
+
+.welcome .equation {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--ash);
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: 1px solid var(--frame);
+  background: rgba(60, 24, 50, 0.20);
+  border-radius: 1px;
+}
+.welcome .equation strong {
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+.welcome .equation .op {
+  color: var(--crimson);
+}
+
+section.panel {
+  background:
+    linear-gradient(180deg, rgba(28, 12, 38, 0.85), rgba(17, 6, 24, 0.92));
+  border: 1px solid var(--frame);
+  border-radius: 2px;
+  padding: 26px 28px;
+  margin-bottom: 24px;
+  position: relative;
+  box-shadow:
+    0 0 24px rgba(120, 14, 46, 0.15),
+    inset 0 1px 0 rgba(240, 200, 120, 0.12),
+    inset 0 -1px 0 rgba(106, 72, 220, 0.08);
+}
+section.panel::before,
+section.panel::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border: 1px solid var(--gold-deep);
+  pointer-events: none;
+  box-shadow: 0 0 4px rgba(200, 144, 72, 0.3);
+}
+section.panel::before {
+  top: 8px; left: 8px;
+  border-right: none; border-bottom: none;
+}
+section.panel::after {
+  bottom: 8px; right: 8px;
+  border-left: none; border-top: none;
+}
+.corner-tr, .corner-bl {
+  position: absolute;
+  width: 16px; height: 16px;
+  border: 1px solid var(--gold-deep);
+  pointer-events: none;
+  box-shadow: 0 0 4px rgba(200, 144, 72, 0.3);
+}
+.corner-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+.corner-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+
+section.panel h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.32em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--frame);
+  text-shadow: 0 0 8px rgba(232, 184, 112, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+section.panel h2::before {
+  content: '✦';
+  color: var(--crimson);
+  font-size: 12px;
+  text-shadow: 0 0 6px rgba(184, 0, 54, 0.55);
+}
+section.panel h2 .meta {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ash);
+  text-shadow: none;
+  text-transform: none;
+}
+
+.counter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.counter {
+  background: rgba(74, 14, 38, 0.18);
+  border: 1px solid var(--ash-deep);
+  border-radius: 1px;
+  padding: 16px 14px;
+  text-align: center;
+  position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.counter:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px rgba(200, 144, 72, 0.22);
+}
+.counter .label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.counter .steppers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.counter .step-btn {
+  width: 30px; height: 30px;
+  background: transparent;
+  border: 1px solid var(--ash-deep);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border-radius: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.counter .step-btn:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  background: rgba(240, 200, 120, 0.08);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+.counter .step-btn:active { transform: scale(0.94); }
+
+.counter .val {
+  width: 60px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--gold-deep);
+  color: var(--ivory);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  padding: 4px 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.counter .val:focus { border-bottom-color: var(--gold-bright); }
+.counter .val::-webkit-outer-spin-button,
+.counter .val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.counter .val { -moz-appearance: textfield; }
+
+.total-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 16px;
+  background: linear-gradient(90deg, rgba(74, 14, 38, 0) 0%, rgba(74, 14, 38, 0.4) 50%, rgba(74, 14, 38, 0) 100%);
+  border-top: 1px solid var(--frame);
+  border-bottom: 1px solid var(--frame);
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.total-block .total-equation {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--parchment);
+  text-transform: uppercase;
+}
+.total-block .total-equation .num { color: var(--gold-bright); font-weight: 700; }
+.total-block .total-equation .op  { color: var(--ash); margin: 0 4px; }
+.total-block .total-num {
+  font-family: 'Cinzel', serif;
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  text-shadow:
+    0 0 12px var(--gold-glow),
+    0 0 24px rgba(180, 0, 54, 0.3);
+  line-height: 1;
+  min-width: 80px;
+  text-align: center;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.total-block .total-num.empty {
+  color: var(--ash-deep);
+  text-shadow: none;
+}
+
+.arsenal-row {
+  margin-bottom: 18px;
+}
+.arsenal-row:last-of-type { margin-bottom: 8px; }
+.arsenal-row .row-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.arsenal-row .row-label .sigil { color: var(--cannon-bright); }
+.arsenal-row .row-label .formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ash);
+  text-transform: none;
+  margin-left: auto;
+}
+
+.chip-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  background: rgba(20, 8, 28, 0.6);
+  border: 1px solid var(--ash-deep);
+  border-radius: 1px;
+  color: var(--ash);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+.chip:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  background: rgba(74, 14, 38, 0.4);
+}
+.chip.extra {
+  border-color: var(--gold-bright);
+  color: var(--ivory);
+  background: linear-gradient(180deg, rgba(184, 0, 54, 0.25), rgba(74, 14, 38, 0.4));
+  box-shadow: 0 0 8px rgba(200, 144, 72, 0.25), inset 0 1px 0 rgba(240, 200, 120, 0.2);
+  border-left: 3px solid var(--gold-bright);
+}
+.chip.banished {
+  border-color: var(--cannon-bright);
+  color: var(--ivory);
+  background: linear-gradient(180deg, rgba(106, 72, 220, 0.30), rgba(28, 12, 38, 0.6));
+  box-shadow: 0 0 8px var(--cannon-glow), inset 0 1px 0 rgba(168, 128, 255, 0.22);
+  border-left: 3px solid var(--cannon-bright);
+}
+.chip.banished::after {
+  content: '⚷';
+  margin-left: 3px;
+  font-size: 9px;
+  color: var(--cannon-bright);
+  text-shadow: 0 0 4px var(--cannon-glow);
+}
+
+.arsenal-hint {
+  margin-top: 12px;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ash);
+  letter-spacing: 0.02em;
+  padding: 10px 14px;
+  border-left: 2px solid var(--gold-deep);
+  background: rgba(20, 8, 28, 0.35);
+}
+.arsenal-hint .key { color: var(--gold-bright); font-style: normal; }
+.arsenal-hint .note { color: var(--cannon-bright); font-style: normal; }
+
+.solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.solution-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(74, 14, 38, 0.45), rgba(28, 12, 38, 0.85));
+  border: 1px solid var(--gold-deep);
+  border-radius: 2px;
+  padding: 18px 16px 14px;
+  overflow: hidden;
+  animation: solutionReveal 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.02) backwards;
+}
+.solution-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(232, 184, 112, 0.08) 50%,
+    transparent 100%
+  );
+  transform: translateX(-110%);
+  animation: solShimmer 1.6s ease 0.2s;
+  pointer-events: none;
+}
+@keyframes solShimmer {
+  0%   { transform: translateX(-110%); }
+  100% { transform: translateX(110%); }
+}
+@keyframes solutionReveal {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.97); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1);     filter: blur(0); }
+}
+.solution-card .sol-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--frame);
+}
+.solution-card .sol-head .num { color: var(--ash); }
+
+.sol-ammo {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ammo-card {
+  background: rgba(20, 8, 28, 0.7);
+  border: 1px solid var(--gold-deep);
+  border-radius: 1px;
+  padding: 9px 6px 8px;
+  text-align: center;
+  position: relative;
+}
+.ammo-card.xyz    { border-top: 2px solid var(--gold-bright); }
+.ammo-card.fusion { border-top: 2px solid var(--cannon-bright); }
+.ammo-card .ammo-type {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.24em;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.ammo-card .ammo-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ivory);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.ammo-card.xyz    .ammo-val { color: var(--gold-bright); }
+.ammo-card.fusion .ammo-val { color: var(--cannon-bright); }
+.ammo-card .ammo-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  color: var(--ash);
+  text-transform: uppercase;
+}
+
+.fire-icon {
+  font-size: 20px;
+  color: var(--blood);
+  text-shadow: 0 0 8px rgba(184, 0, 54, 0.6), 0 0 16px rgba(232, 56, 106, 0.4);
+  animation: firePulse 1.6s ease-in-out infinite;
+  text-align: center;
+  letter-spacing: -2px;
+}
+@keyframes firePulse {
+  0%, 100% { transform: scale(1);    opacity: 0.85; }
+  50%      { transform: scale(1.15); opacity: 1;    text-shadow: 0 0 12px rgba(184, 0, 54, 0.8), 0 0 24px rgba(232, 56, 106, 0.55); }
+}
+
+.sol-target {
+  background: linear-gradient(180deg, rgba(184, 0, 54, 0.18), rgba(74, 14, 38, 0.45));
+  border: 1px solid var(--crimson);
+  border-radius: 1px;
+  padding: 10px 8px;
+  text-align: center;
+  position: relative;
+  box-shadow: inset 0 0 10px rgba(184, 0, 54, 0.18);
+}
+.sol-target .target-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--rose);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.sol-target .target-val {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ivory);
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(232, 56, 106, 0.5), 0 0 20px rgba(184, 0, 54, 0.3);
+}
+.sol-target .target-tag {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--parchment);
+  margin-top: 4px;
+}
+
+.sol-math {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--frame);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ash);
+  text-align: center;
+}
+.sol-math .ok { color: var(--gold-bright); }
+
+.no-solutions {
+  padding: 30px 16px;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ash);
+  border: 1px dashed var(--frame);
+  border-radius: 1px;
+  background: rgba(28, 12, 38, 0.4);
+}
+.no-solutions .glyph {
+  display: block;
+  font-size: 28px;
+  color: var(--frame);
+  margin-bottom: 8px;
+}
+.no-solutions .hint {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--ash-deep);
+  font-style: normal;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.quick-btn {
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--ash-deep);
+  border-radius: 1px;
+  color: var(--parchment);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.quick-btn .qb-action {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+}
+.quick-btn .qb-effect {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ash);
+  text-transform: uppercase;
+}
+.quick-btn:hover {
+  border-color: var(--gold);
+  background: rgba(74, 14, 38, 0.3);
+  transform: translateX(2px);
+  box-shadow: -2px 0 0 var(--blood);
+}
+
+.adjacent-label {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  color: var(--rose);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.adjacent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+  gap: 6px;
+}
+.adj-cell {
+  background: rgba(20, 8, 28, 0.5);
+  border: 1px solid var(--ash-deep);
+  border-radius: 1px;
+  padding: 9px 6px;
+  text-align: center;
+  cursor: default;
+  transition: all 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.adj-cell.current {
+  border-color: var(--gold-bright);
+  background: linear-gradient(180deg, rgba(184, 0, 54, 0.2), rgba(74, 14, 38, 0.5));
+  box-shadow: 0 0 12px rgba(232, 184, 112, 0.25), inset 0 0 8px rgba(184, 0, 54, 0.15);
+}
+.adj-cell.hot { border-color: var(--gold); }
+.adj-cell.cold { opacity: 0.45; }
+.adj-cell .adj-delta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ash);
+}
+.adj-cell.current .adj-delta { color: var(--gold-bright); }
+.adj-cell .adj-t {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ivory);
+  line-height: 1;
+}
+.adj-cell.cold .adj-t { color: var(--ash-deep); }
+.adj-cell .adj-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  color: var(--rose);
+  text-transform: uppercase;
+}
+.adj-cell.cold .adj-count, .adj-cell.zero .adj-count { color: var(--ash-deep); }
+
+.seal {
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--frame);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ash);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.seal .greeting::before { content: '♛ '; color: var(--gold-bright); font-style: normal; }
+.seal .version {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--ash-deep);
+  text-transform: uppercase;
+}
+
+@media (max-width: 540px) {
+  .welcome h1 { font-size: 22px; }
+  .welcome .equation { font-size: 9px; gap: 4px 10px; }
+  .hall { padding: 24px 14px 60px; }
+  section.panel { padding: 20px 16px; }
+  .counter-grid { grid-template-columns: 1fr; }
+  .total-block .total-num { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<div class="dust">
+  <span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span>
+</div>
+
+<div class="hall">
+
+  <header class="welcome">
+    <div class="crest">⚜</div>
+    <h1>Simultaneous Equation Cannons</h1>
+    <div class="subtitle">~ Labrynth Manor Firing Aid ~</div>
+    <div class="equation">
+      <span><strong>2X + Y</strong> <span class="op">=</span> total cards on field &amp; both hands</span>
+      <span><strong>X + Y</strong> <span class="op">=</span> rank/level of target destroyed</span>
+    </div>
+  </header>
+
+  <section class="panel">
+    <span class="corner-tr"></span><span class="corner-bl"></span>
+    <h2>Field &amp; Hands</h2>
+    <div class="counter-grid">
+      <div class="counter">
+        <div class="label">Cards on Field</div>
+        <div class="steppers">
+          <button class="step-btn" data-step="field" data-dir="-1">−</button>
+          <input type="number" class="val" id="cField" value="0" min="0" max="40">
+          <button class="step-btn" data-step="field" data-dir="1">+</button>
+        </div>
+      </div>
+      <div class="counter">
+        <div class="label">Your Hand</div>
+        <div class="steppers">
+          <button class="step-btn" data-step="myHand" data-dir="-1">−</button>
+          <input type="number" class="val" id="cMyHand" value="0" min="0" max="20">
+          <button class="step-btn" data-step="myHand" data-dir="1">+</button>
+        </div>
+      </div>
+      <div class="counter">
+        <div class="label">Opponent Hand</div>
+        <div class="steppers">
+          <button class="step-btn" data-step="oppHand" data-dir="-1">−</button>
+          <input type="number" class="val" id="cOppHand" value="0" min="0" max="20">
+          <button class="step-btn" data-step="oppHand" data-dir="1">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="total-block">
+      <div class="total-equation">
+        <span class="num" id="eqField">0</span><span class="op">+</span><span class="num" id="eqMyHand">0</span><span class="op">+</span><span class="num" id="eqOppHand">0</span><span class="op">=</span>
+      </div>
+      <div class="total-num empty" id="totalNum">0</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="corner-tr"></span><span class="corner-bl"></span>
+    <h2>Extra Deck &amp; Banished Ammo Pool</h2>
+    <div class="arsenal-row">
+      <div class="row-label">
+        <span class="sigil">◈</span>
+        Xyz Ranks
+        <span class="formula">variable X · banish 1 as ammo</span>
+      </div>
+      <div class="chip-strip" id="xyzChips"></div>
+    </div>
+    <div class="arsenal-row">
+      <div class="row-label">
+        <span class="sigil">◈</span>
+        Fusion Levels
+        <span class="formula">variable Y · banish 1 as ammo</span>
+      </div>
+      <div class="chip-strip" id="fusionChips"></div>
+    </div>
+    <p class="arsenal-hint">
+      Click a chip to cycle through three states:
+      <span class="key">◯ Not owned</span> → <span class="key">◆ Extra Deck</span> (fresh ammo, gold border) → <span class="note">⚷ Banished</span> (already spent once, purple border) → back to not owned.
+      Per the card's effect, both <span class="key">Extra Deck</span> AND <span class="note">Banished</span> cards count as valid ammo for the next firing — so the purple chips give you <em>more combinations</em> across multi-turn play, not fewer.
+    </p>
+  </section>
+
+  <section class="panel">
+    <span class="corner-tr"></span><span class="corner-bl"></span>
+    <h2>Firing Solutions <span class="meta" id="solCount"></span></h2>
+    <div class="solutions-grid" id="solutions"></div>
+    <div class="no-solutions" id="noSols" style="display:none;">
+      <span class="glyph">⚷</span>
+      <span id="noSolMsg">The Manor lies silent.</span>
+      <span class="hint" id="noSolHint">Adjust the field state, or unlock more Extra Deck ranks/levels.</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="corner-tr"></span><span class="corner-bl"></span>
+    <h2>What-If Fluctuations</h2>
+    <div class="quick-actions">
+      <button class="quick-btn" data-quick="myHand+1">
+        <span class="qb-action">Draw</span>
+        <span class="qb-effect">→ Your Hand +1</span>
+      </button>
+      <button class="quick-btn" data-quick="myHand-1">
+        <span class="qb-action">Discard</span>
+        <span class="qb-effect">→ Your Hand −1</span>
+      </button>
+      <button class="quick-btn" data-quick="field+1">
+        <span class="qb-action">Summon</span>
+        <span class="qb-effect">→ Field +1</span>
+      </button>
+      <button class="quick-btn" data-quick="field-1">
+        <span class="qb-action">Destroy</span>
+        <span class="qb-effect">→ Field −1</span>
+      </button>
+      <button class="quick-btn" data-quick="oppHand+1">
+        <span class="qb-action">Opp Draws</span>
+        <span class="qb-effect">→ Opp Hand +1</span>
+      </button>
+      <button class="quick-btn" data-quick="oppHand-1">
+        <span class="qb-action">Opp Discards</span>
+        <span class="qb-effect">→ Opp Hand −1</span>
+      </button>
+    </div>
+
+    <div class="adjacent-label">Adjacent Totals · firing count at T ± 3</div>
+    <div class="adjacent-grid" id="adjacent"></div>
+  </section>
+
+  <footer class="seal">
+    <span class="greeting">Welcome back, Lady Labrynth.</span>
+    <span class="version">v1 · client-side · zero telemetry</span>
+  </footer>
+
+</div>
+
+<script>
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+function makeEl(tag, opts = {}, ...children) {
+  const el = document.createElement(tag);
+  if (opts.cls)  el.className = opts.cls;
+  if (opts.text != null) el.textContent = opts.text;
+  if (opts.attrs) for (const [k, v] of Object.entries(opts.attrs)) el.setAttribute(k, v);
+  for (const c of children) if (c != null) el.appendChild(c);
+  return el;
+}
+
+const RANK_RANGE  = [1,2,3,4,5,6,7,8,9,10,11,12];
+const LEVEL_RANGE = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+// Default Extra Deck assumption for a Labrynth deck running SEC.
+const DEFAULT_XYZ    = [3, 4, 7, 8];
+const DEFAULT_FUSION = [5, 6, 8, 10];
+
+/* Tri-state model per rank/level: NOT-OWNED (absent from both sets),
+   EXTRA-DECK (in xyzExtra/fusionExtra), or BANISHED (in xyzBanished/
+   fusionBanished). Per SEC's effect, both EXTRA-DECK and BANISHED count
+   as valid ammo for current/future activations. */
+const state = {
+  field: 0,
+  myHand: 0,
+  oppHand: 0,
+  xyzExtra:      new Set(DEFAULT_XYZ),
+  xyzBanished:   new Set(),
+  fusionExtra:   new Set(DEFAULT_FUSION),
+  fusionBanished:new Set(),
+};
+
+const STORAGE = 'labrynth-cannons-v2';
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null');
+    if (saved) {
+      state.field   = +saved.field   || 0;
+      state.myHand  = +saved.myHand  || 0;
+      state.oppHand = +saved.oppHand || 0;
+      const setFrom = (arr, range) => new Set((arr || []).filter(n => range.includes(+n)).map(Number));
+      state.xyzExtra       = setFrom(saved.xyzExtra,       RANK_RANGE);
+      state.xyzBanished    = setFrom(saved.xyzBanished,    RANK_RANGE);
+      state.fusionExtra    = setFrom(saved.fusionExtra,    LEVEL_RANGE);
+      state.fusionBanished = setFrom(saved.fusionBanished, LEVEL_RANGE);
+    }
+  } catch {}
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE, JSON.stringify({
+      field: state.field,
+      myHand: state.myHand,
+      oppHand: state.oppHand,
+      xyzExtra:       [...state.xyzExtra],
+      xyzBanished:    [...state.xyzBanished],
+      fusionExtra:    [...state.fusionExtra],
+      fusionBanished: [...state.fusionBanished],
+    }));
+  } catch {}
+}
+
+// Cycle a value through: NOT-OWNED → EXTRA-DECK → BANISHED → NOT-OWNED
+function cycleChipState(pool, val) {
+  const extraSet     = pool === 'xyz' ? state.xyzExtra    : state.fusionExtra;
+  const banishedSet  = pool === 'xyz' ? state.xyzBanished : state.fusionBanished;
+  if (!extraSet.has(val) && !banishedSet.has(val)) {
+    // not-owned → extra deck
+    extraSet.add(val);
+  } else if (extraSet.has(val)) {
+    // extra deck → banished
+    extraSet.delete(val);
+    banishedSet.add(val);
+  } else {
+    // banished → not-owned
+    banishedSet.delete(val);
+  }
+}
+
+// Ammo pool for the math is the UNION of extra-deck + banished.
+function ammoXyz()    { return new Set([...state.xyzExtra,    ...state.xyzBanished]); }
+function ammoFusion() { return new Set([...state.fusionExtra, ...state.fusionBanished]); }
+
+/* Core math: every (X, Y) where 2X + Y = T and both X (rank) and Y (level)
+   are in the available ammo pool. The pool covers BOTH extra-deck and
+   banished-zone cards, since per SEC's effect either can serve as ammo
+   for subsequent activations. */
+function findSolutions(total, xyzSet, fusionSet) {
+  const sols = [];
+  for (const X of xyzSet) {
+    const needY = total - 2 * X;
+    if (needY >= 1 && fusionSet.has(needY)) {
+      sols.push({ X, Y: needY, target: X + needY });
+    }
+  }
+  sols.sort((a, b) => a.target - b.target || a.X - b.X);
+  return sols;
+}
+
+function countSolutions(total) {
+  return findSolutions(total, ammoXyz(), ammoFusion()).length;
+}
+
+function renderCounters() {
+  $('#cField').value   = state.field;
+  $('#cMyHand').value  = state.myHand;
+  $('#cOppHand').value = state.oppHand;
+  $('#eqField').textContent   = state.field;
+  $('#eqMyHand').textContent  = state.myHand;
+  $('#eqOppHand').textContent = state.oppHand;
+
+  const total = state.field + state.myHand + state.oppHand;
+  const totalEl = $('#totalNum');
+  totalEl.textContent = total;
+  totalEl.classList.toggle('empty', total === 0);
+}
+
+function chipStateClass(pool, val) {
+  const extraSet    = pool === 'xyz' ? state.xyzExtra    : state.fusionExtra;
+  const banishedSet = pool === 'xyz' ? state.xyzBanished : state.fusionBanished;
+  if (extraSet.has(val))    return 'extra';
+  if (banishedSet.has(val)) return 'banished';
+  return ''; // not-owned
+}
+function chipTitle(pool, val) {
+  const cls = chipStateClass(pool, val);
+  const label = pool === 'xyz' ? ('Rank ' + val) : ('Level ' + val);
+  if (cls === 'extra')    return `${label} — in Extra Deck (fresh ammo). Click to mark as banished.`;
+  if (cls === 'banished') return `${label} — already banished, still usable as ammo. Click to remove.`;
+  return `${label} — not owned. Click to add to Extra Deck.`;
+}
+
+function renderArsenal() {
+  const xyzStrip = $('#xyzChips');
+  const fuStrip  = $('#fusionChips');
+  xyzStrip.replaceChildren();
+  fuStrip.replaceChildren();
+  for (const r of RANK_RANGE) {
+    const cls = chipStateClass('xyz', r);
+    xyzStrip.appendChild(makeEl('button', {
+      cls: 'chip xyz' + (cls ? ' ' + cls : ''),
+      attrs: { 'data-pool': 'xyz', 'data-val': r, type: 'button', title: chipTitle('xyz', r) },
+      text: 'R' + r,
+    }));
+  }
+  for (const l of LEVEL_RANGE) {
+    const cls = chipStateClass('fusion', l);
+    fuStrip.appendChild(makeEl('button', {
+      cls: 'chip fusion' + (cls ? ' ' + cls : ''),
+      attrs: { 'data-pool': 'fusion', 'data-val': l, type: 'button', title: chipTitle('fusion', l) },
+      text: 'L' + l,
+    }));
+  }
+}
+
+function renderSolutions() {
+  const total = state.field + state.myHand + state.oppHand;
+  const grid    = $('#solutions');
+  const noSols  = $('#noSols');
+  const countEl = $('#solCount');
+  const msgEl   = $('#noSolMsg');
+  const hintEl  = $('#noSolHint');
+  grid.replaceChildren();
+
+  if (total === 0) {
+    grid.style.display  = 'none';
+    noSols.style.display = 'block';
+    noSols.querySelector('.glyph').textContent = '⚜';
+    msgEl.textContent = 'Set a field state above to begin.';
+    hintEl.textContent = 'The cannons sleep until you describe the battlefield.';
+    countEl.textContent = '';
+    return;
+  }
+
+  const sols = findSolutions(total, ammoXyz(), ammoFusion());
+  if (sols.length === 0) {
+    grid.style.display  = 'none';
+    noSols.style.display = 'block';
+    noSols.querySelector('.glyph').textContent = '⚷';
+    msgEl.textContent = `No (X, Y) pair in your arsenal satisfies 2X + Y = ${total}.`;
+    hintEl.textContent = 'Adjust the field state via the What-If panel below, or expand your ammo pool above.';
+    countEl.textContent = `· 0 solutions for T=${total}`;
+    return;
+  }
+
+  noSols.style.display = 'none';
+  grid.style.display   = 'grid';
+  countEl.textContent = `· ${sols.length} solution${sols.length > 1 ? 's' : ''} for T=${total}`;
+
+  sols.forEach((sol, i) => {
+    const card = makeEl('div', { cls: 'solution-card' });
+    card.style.animationDelay = `${i * 0.05}s`;
+
+    const head = makeEl('div', { cls: 'sol-head' });
+    head.appendChild(makeEl('span', { text: '✦ Firing Solution' }));
+    head.appendChild(makeEl('span', { cls: 'num', text: '#' + String(i + 1).padStart(2, '0') }));
+    card.appendChild(head);
+
+    const ammo = makeEl('div', { cls: 'sol-ammo' });
+    const xyzCard = makeEl('div', { cls: 'ammo-card xyz' });
+    xyzCard.appendChild(makeEl('div', { cls: 'ammo-type', text: 'Xyz · X' }));
+    xyzCard.appendChild(makeEl('div', { cls: 'ammo-val', text: 'R' + sol.X }));
+    xyzCard.appendChild(makeEl('div', { cls: 'ammo-tag', text: 'BANISH' }));
+    ammo.appendChild(xyzCard);
+
+    ammo.appendChild(makeEl('div', { cls: 'fire-icon', text: '⋙' }));
+
+    const fuCard = makeEl('div', { cls: 'ammo-card fusion' });
+    fuCard.appendChild(makeEl('div', { cls: 'ammo-type', text: 'Fusion · Y' }));
+    fuCard.appendChild(makeEl('div', { cls: 'ammo-val', text: 'L' + sol.Y }));
+    fuCard.appendChild(makeEl('div', { cls: 'ammo-tag', text: 'BANISH' }));
+    ammo.appendChild(fuCard);
+
+    card.appendChild(ammo);
+
+    const tgt = makeEl('div', { cls: 'sol-target' });
+    tgt.appendChild(makeEl('div', { cls: 'target-label', text: 'Destroy' }));
+    tgt.appendChild(makeEl('div', { cls: 'target-val', text: 'R/L ' + sol.target }));
+    tgt.appendChild(makeEl('div', { cls: 'target-tag', text: 'one monster of Rank or Level ' + sol.target }));
+    card.appendChild(tgt);
+
+    const math = makeEl('div', { cls: 'sol-math' });
+    math.appendChild(document.createTextNode('2(' + sol.X + ') + ' + sol.Y + ' = '));
+    math.appendChild(makeEl('span', { cls: 'ok', text: total }));
+    math.appendChild(document.createTextNode(' · X + Y = ' + sol.target));
+    card.appendChild(math);
+
+    grid.appendChild(card);
+  });
+}
+
+function renderAdjacent() {
+  const total = state.field + state.myHand + state.oppHand;
+  const grid = $('#adjacent');
+  grid.replaceChildren();
+  for (const d of [-3, -2, -1, 0, 1, 2, 3]) {
+    const t = total + d;
+    const cell = makeEl('div', { cls: 'adj-cell' });
+    if (d === 0) cell.classList.add('current');
+    const count = (t >= 1) ? countSolutions(t) : 0;
+    if (t < 1) cell.classList.add('cold');
+    else if (count > 0) cell.classList.add('hot');
+    else cell.classList.add('zero');
+
+    const deltaLabel = d === 0 ? 'NOW' : (d > 0 ? '+' + d : String(d));
+    cell.appendChild(makeEl('div', { cls: 'adj-delta', text: deltaLabel }));
+    cell.appendChild(makeEl('div', { cls: 'adj-t', text: t < 1 ? '—' : String(t) }));
+    cell.appendChild(makeEl('div', { cls: 'adj-count',
+      text: t < 1 ? '—' : (count + (count === 1 ? ' shot' : ' shots'))
+    }));
+    grid.appendChild(cell);
+  }
+}
+
+function render() {
+  renderCounters();
+  renderSolutions();
+  renderAdjacent();
+  saveState();
+}
+
+function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+function setCount(key, val) {
+  const max = key === 'field' ? 40 : 20;
+  state[key] = clamp(val | 0, 0, max);
+  render();
+}
+
+$$('.step-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.step;
+    const dir = +btn.dataset.dir;
+    setCount(key, state[key] + dir);
+  });
+});
+
+[['cField','field'], ['cMyHand','myHand'], ['cOppHand','oppHand']].forEach(([id, key]) => {
+  const inp = $('#' + id);
+  inp.addEventListener('input', () => setCount(key, +inp.value || 0));
+  inp.addEventListener('blur',  () => { inp.value = state[key]; });
+});
+
+document.addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  const pool = chip.dataset.pool;
+  const val  = +chip.dataset.val;
+  cycleChipState(pool, val);
+  renderArsenal();
+  render();
+});
+
+$$('.quick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const action = btn.dataset.quick;
+    const m = action.match(/^(\w+)([+-])(\d+)$/);
+    if (!m) return;
+    const [, key, op, n] = m;
+    setCount(key, state[key] + (op === '+' ? +n : -+n));
+  });
+});
+
+loadState();
+renderArsenal();
+render();
+</script>
+</body>
+</html>
