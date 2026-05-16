@@ -527,6 +527,49 @@ section.panel h2 .meta {
   text-transform: uppercase;
 }
 
+/* Reload button — inline in the Magazine panel H2 */
+.reset-btn {
+  margin-left: auto;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  padding: 4px 10px;
+  background: rgba(20, 30, 60, 0.60);
+  border: 1px solid var(--ash-deep);
+  color: var(--cannon-bright);
+  cursor: pointer;
+  border-radius: 1px;
+  text-transform: uppercase;
+  transition: all 0.18s ease;
+  text-shadow: 0 0 4px var(--cannon-glow);
+}
+.reset-btn:hover {
+  border-color: var(--cannon-bright);
+  color: #ffffff;
+  background: rgba(128, 64, 255, 0.18);
+  box-shadow: 0 0 12px var(--cannon-glow);
+  transform: rotate(-3deg);
+}
+.reset-btn:active { transform: scale(0.94) rotate(-6deg); }
+
+/* Brief reload-confirmation flash — purple sweep (cannon recovery) */
+.reload-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(128, 64, 255, 0.30), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.16), transparent 75%);
+  animation: reloadFlash 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+@keyframes reloadFlash {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* READY / COLD pip in the firing-solutions header */
 .ready-pip {
   margin-left: auto;
@@ -1286,7 +1329,10 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
     <!-- ═══ CENTER: AMMUNITION MAGAZINE ═══ -->
     <section class="panel magazine">
       <span class="corner-tr"></span><span class="corner-bl"></span>
-      <h2 data-i18n="h_arsenal">Ammunition Magazine</h2>
+      <h2>
+        <span data-i18n="h_arsenal">Ammunition Magazine</span>
+        <button class="reset-btn" id="btnResetArsenal" type="button" data-i18n="reset_arsenal">↻ Reload</button>
+      </h2>
       <div class="arsenal-row">
         <div class="row-label">
           <span class="sigil">◈</span>
@@ -1356,6 +1402,7 @@ const i18n = {
     ready_lbl: 'READY',
     cold_lbl: 'COLD',
     h_arsenal: 'Ammunition Magazine',
+    reset_arsenal: '↻ Reload',
     r_xyz: 'Xyz Ranks',
     r_xyz_formula: 'variable X · banish 1 as ammo',
     r_fusion: 'Fusion Levels',
@@ -1410,6 +1457,7 @@ const i18n = {
     ready_lbl: '就绪',
     cold_lbl: '冷却',
     h_arsenal: '弹药库',
+    reset_arsenal: '↻ 重新装弹',
     r_xyz: 'Xyz 阶级',
     r_xyz_formula: '变量 X · 除外 1 张作为弹药',
     r_fusion: '融合等级',
@@ -1933,6 +1981,23 @@ $$('.lang-btn').forEach(btn => {
     render();
   });
 });
+
+/* Reload Magazine — reset Xyz/Fusion arsenal to defaults at game start.
+   Total (T) is preserved; only the bullet pools are restored to factory.
+   No confirmation prompt — explicit click on the button is the intent. */
+const btnResetArsenal = $('#btnResetArsenal');
+if (btnResetArsenal) {
+  btnResetArsenal.addEventListener('click', () => {
+    state.xyzCount    = buildDefaultCounts(RANK_RANGE,  DEFAULT_XYZ_PAIRS,    XYZ_MAX);
+    state.fusionCount = buildDefaultCounts(LEVEL_RANGE, DEFAULT_FUSION_SOLOS, FUSION_MAX);
+    renderArsenal();
+    render();
+    const flash = document.createElement('div');
+    flash.className = 'reload-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 600);
+  });
+}
 
 loadState();
 applyI18n();
