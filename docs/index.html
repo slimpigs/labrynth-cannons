@@ -411,46 +411,205 @@ section.panel h2 .meta {
 .counter .val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .counter .val { -moz-appearance: textfield; }
 
-.total-block {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ============================================================
+   TERMINAL GRID — 3-column cannon-station layout.
+   Left:   target reticle (big T readout + adjacent jump grid)
+   Center: ammunition magazine (chip pools)
+   Right:  firing solutions (scrollable list, READY indicator)
+   ============================================================ */
+.terminal-grid {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.9fr) minmax(280px, 1.1fr) minmax(340px, 1.6fr);
   gap: 18px;
-  padding: 16px;
-  background: linear-gradient(90deg, rgba(0, 212, 255, 0) 0%, rgba(0, 212, 255, 0.12) 50%, rgba(0, 212, 255, 0) 100%);
-  border-top: 1px solid var(--cyan);
-  border-bottom: 1px solid var(--cyan);
-  margin-top: 4px;
-  flex-wrap: wrap;
-  box-shadow: 0 0 12px var(--cyan-glow);
+  margin-bottom: 28px;
+  align-items: start;
 }
-.total-block .total-equation {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: var(--parchment);
-  text-transform: uppercase;
+@media (max-width: 960px) {
+  .terminal-grid { grid-template-columns: 1fr; }
 }
-.total-block .total-equation .num { color: var(--cyan-bright); font-weight: 700; text-shadow: 0 0 4px var(--cyan-glow); }
-.total-block .total-equation .op  { color: var(--magenta); margin: 0 4px; }
-.total-block .total-num {
+
+/* TARGET RETICLE block — large T readout */
+.total-block {
+  text-align: center;
+  padding: 8px 0 14px;
+  border-top: 1px solid var(--cyan-deep);
+  border-bottom: 1px solid var(--cyan-deep);
+  margin-bottom: 18px;
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0) 0%, rgba(0, 212, 255, 0.06) 50%, rgba(0, 212, 255, 0) 100%);
+  position: relative;
+}
+.total-readout {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.total-num {
   font-family: 'Orbitron', sans-serif;
-  font-size: 48px;
+  font-size: 72px;
   font-weight: 900;
   color: #ffffff;
+  line-height: 0.95;
   text-shadow:
-    0 0 12px var(--cyan-glow),
-    0 0 28px var(--cyan-glow),
-    0 0 50px rgba(0, 212, 255, 0.35);
-  line-height: 1;
-  min-width: 80px;
-  text-align: center;
-  transition: color 0.2s, text-shadow 0.2s;
+    0 0 14px var(--cyan-glow),
+    0 0 30px var(--cyan-glow),
+    0 0 56px rgba(0, 212, 255, 0.35);
+  letter-spacing: -0.02em;
+  transition: color 0.2s, text-shadow 0.25s;
 }
-.total-block .total-num.empty {
+.total-num.empty {
   color: var(--ash-deep);
   text-shadow: none;
 }
+.total-suffix {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--cyan-bright);
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 6px var(--cyan-glow);
+}
+.total-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.total-step {
+  width: 44px; height: 44px;
+  background: rgba(20, 30, 60, 0.6);
+  border: 1px solid var(--cyan-deep);
+  color: var(--cyan-bright);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border-radius: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.total-step:hover {
+  border-color: var(--cyan-bright);
+  color: #ffffff;
+  background: rgba(0, 212, 255, 0.22);
+  box-shadow: 0 0 12px var(--cyan-glow);
+  text-shadow: 0 0 6px var(--cyan-glow);
+}
+.total-step:active { transform: scale(0.94); }
+.total-val {
+  width: 64px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--cyan-deep);
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+  padding: 4px 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.total-val:focus { border-bottom-color: var(--cyan-bright); box-shadow: 0 1px 0 var(--cyan-glow); }
+.total-val::-webkit-outer-spin-button,
+.total-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.total-val { -moz-appearance: textfield; }
+.total-caption {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.20em;
+  color: var(--parchment);
+  text-transform: uppercase;
+}
+
+/* READY / COLD pip in the firing-solutions header */
+.ready-pip {
+  margin-left: auto;
+  padding: 3px 11px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  border-radius: 1px;
+  border: 1px solid var(--ash-deep);
+  color: var(--ash);
+  background: rgba(20, 30, 56, 0.6);
+  text-transform: uppercase;
+}
+body.firing-ready .ready-pip {
+  border-color: var(--cyan-bright);
+  color: #ffffff;
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.22), rgba(0, 100, 144, 0.30));
+  box-shadow: 0 0 12px var(--cyan-glow), inset 0 0 6px rgba(0, 212, 255, 0.20);
+  text-shadow: 0 0 8px var(--cyan-glow);
+  animation: readyPulse 1.5s ease-in-out infinite;
+}
+body.firing-cold .ready-pip {
+  border-color: var(--magenta);
+  color: var(--magenta-bright);
+  background: rgba(255, 32, 128, 0.10);
+  text-shadow: 0 0 4px var(--magenta-glow);
+}
+@keyframes readyPulse {
+  0%, 100% { box-shadow: 0 0 10px var(--cyan-glow), inset 0 0 6px rgba(0, 212, 255, 0.20); transform: scale(1); }
+  50%      { box-shadow: 0 0 22px var(--cyan-glow), 0 0 32px rgba(0, 212, 255, 0.40), inset 0 0 10px rgba(0, 212, 255, 0.35); transform: scale(1.06); }
+}
+
+/* Internally scrollable solutions list so the page stays one viewport */
+.solutions-scroll {
+  position: relative;
+}
+.solutions-scroll .solutions-grid {
+  max-height: calc(100vh - 360px);
+  min-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.solutions-scroll .solutions-grid::-webkit-scrollbar { width: 8px; }
+.solutions-scroll .solutions-grid::-webkit-scrollbar-track { background: rgba(20, 30, 56, 0.4); }
+.solutions-scroll .solutions-grid::-webkit-scrollbar-thumb { background: var(--cyan-deep); border-radius: 1px; }
+.solutions-scroll .solutions-grid::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+/* When firing-ready: amplify the FIRE button pulse */
+body.firing-ready .fire-btn {
+  animation: fireReadyBreath 1.6s ease-in-out infinite;
+}
+@keyframes fireReadyBreath {
+  0%, 100% {
+    box-shadow: 0 0 14px var(--cyan-glow), inset 0 0 10px rgba(0, 212, 255, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 28px var(--cyan-glow), 0 0 14px var(--magenta-glow), inset 0 0 16px rgba(0, 212, 255, 0.36);
+  }
+}
+
+/* In firing-ready mode: subtle whole-panel cyan border glow on firing column */
+body.firing-ready section.panel.firing {
+  box-shadow:
+    0 0 28px rgba(0, 212, 255, 0.22),
+    inset 0 1px 0 rgba(0, 212, 255, 0.28),
+    inset 0 -1px 0 rgba(72, 40, 160, 0.20);
+  border-color: var(--cyan);
+}
+
+/* Compact welcome on the new layout — push content above the fold */
+.welcome { margin-bottom: 26px; padding: 18px 12px 16px; }
+.welcome h1 { font-size: 26px; margin: 6px 0 4px; }
+.welcome .subtitle { font-size: 12px; margin-bottom: 12px; }
+.welcome .equation { font-size: 10px; gap: 4px 14px; padding: 6px 14px; }
+.crest { font-size: 26px; margin-bottom: 2px; }
+
+/* Tighten panel padding so all three columns fit comfortably */
+section.panel { padding: 18px 18px 16px; }
+section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; letter-spacing: 0.26em; }
 
 .arsenal-row {
   margin-bottom: 18px;
@@ -1102,109 +1261,70 @@ section.panel h2 .meta {
     </div>
   </header>
 
-  <section class="panel">
-    <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2 data-i18n="h_state">Field &amp; Hands</h2>
-    <div class="counter-grid">
-      <div class="counter">
-        <div class="label" data-i18n="l_field">Cards on Field</div>
-        <div class="steppers">
-          <button class="step-btn" data-step="field" data-dir="-1">−</button>
-          <input type="number" class="val" id="cField" value="0" min="0" max="40">
-          <button class="step-btn" data-step="field" data-dir="1">+</button>
+  <div class="terminal-grid">
+
+    <!-- ═══ LEFT: TARGET RETICLE ═══ -->
+    <section class="panel reticle">
+      <span class="corner-tr"></span><span class="corner-bl"></span>
+      <h2 data-i18n="h_state">Target Reticle</h2>
+      <div class="total-block">
+        <div class="total-readout">
+          <span class="total-num empty" id="totalNum">0</span>
+          <span class="total-suffix">T</span>
+        </div>
+        <div class="total-stepper-row">
+          <button class="total-step" data-dir="-1" type="button" aria-label="Decrement total">−</button>
+          <input type="number" class="total-val" id="cTotal" value="0" min="0" max="60">
+          <button class="total-step" data-dir="1" type="button" aria-label="Increment total">+</button>
+        </div>
+        <div class="total-caption" data-i18n="l_total">Total Cards · Field + Both Hands</div>
+      </div>
+      <div class="adjacent-label" data-i18n="adj_label">Adjacent Totals · click to jump · firing count at T ± 3</div>
+      <div class="adjacent-grid" id="adjacent"></div>
+    </section>
+
+    <!-- ═══ CENTER: AMMUNITION MAGAZINE ═══ -->
+    <section class="panel magazine">
+      <span class="corner-tr"></span><span class="corner-bl"></span>
+      <h2 data-i18n="h_arsenal">Ammunition Magazine</h2>
+      <div class="arsenal-row">
+        <div class="row-label">
+          <span class="sigil">◈</span>
+          <span data-i18n="r_xyz">Xyz Ranks</span>
+          <span class="formula" data-i18n="r_xyz_formula">variable X · banish 1 as ammo</span>
+        </div>
+        <div class="chip-strip" id="xyzChips"></div>
+      </div>
+      <div class="arsenal-row">
+        <div class="row-label">
+          <span class="sigil">◈</span>
+          <span data-i18n="r_fusion">Fusion Levels</span>
+          <span class="formula" data-i18n="r_fusion_formula">variable Y · banish 1 as ammo</span>
+        </div>
+        <div class="chip-strip" id="fusionChips"></div>
+      </div>
+      <p class="arsenal-hint" id="arsenalHint"></p>
+    </section>
+
+    <!-- ═══ RIGHT: FIRING SOLUTIONS ═══ -->
+    <section class="panel firing">
+      <span class="corner-tr"></span><span class="corner-bl"></span>
+      <h2>
+        <span data-i18n="h_solutions">Firing Solutions</span>
+        <span class="meta" id="solCount"></span>
+        <span class="ready-pip" id="readyPip"></span>
+      </h2>
+      <div class="solutions-scroll">
+        <div class="solutions-grid" id="solutions"></div>
+        <div class="no-solutions" id="noSols" style="display:none;">
+          <span class="glyph">⚷</span>
+          <span id="noSolMsg">The Manor lies silent.</span>
+          <span class="hint" id="noSolHint">Adjust the total, or unlock more Extra Deck ranks/levels.</span>
         </div>
       </div>
-      <div class="counter">
-        <div class="label" data-i18n="l_myhand">Your Hand</div>
-        <div class="steppers">
-          <button class="step-btn" data-step="myHand" data-dir="-1">−</button>
-          <input type="number" class="val" id="cMyHand" value="0" min="0" max="20">
-          <button class="step-btn" data-step="myHand" data-dir="1">+</button>
-        </div>
-      </div>
-      <div class="counter">
-        <div class="label" data-i18n="l_opphand">Opponent Hand</div>
-        <div class="steppers">
-          <button class="step-btn" data-step="oppHand" data-dir="-1">−</button>
-          <input type="number" class="val" id="cOppHand" value="0" min="0" max="20">
-          <button class="step-btn" data-step="oppHand" data-dir="1">+</button>
-        </div>
-      </div>
-    </div>
-    <div class="total-block">
-      <div class="total-equation">
-        <span class="num" id="eqField">0</span><span class="op">+</span><span class="num" id="eqMyHand">0</span><span class="op">+</span><span class="num" id="eqOppHand">0</span><span class="op">=</span>
-      </div>
-      <div class="total-num empty" id="totalNum">0</div>
-    </div>
-  </section>
+    </section>
 
-  <section class="panel">
-    <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2 data-i18n="h_arsenal">Extra Deck &amp; Banished Ammo Pool</h2>
-    <div class="arsenal-row">
-      <div class="row-label">
-        <span class="sigil">◈</span>
-        <span data-i18n="r_xyz">Xyz Ranks</span>
-        <span class="formula" data-i18n="r_xyz_formula">variable X · banish 1 as ammo</span>
-      </div>
-      <div class="chip-strip" id="xyzChips"></div>
-    </div>
-    <div class="arsenal-row">
-      <div class="row-label">
-        <span class="sigil">◈</span>
-        <span data-i18n="r_fusion">Fusion Levels</span>
-        <span class="formula" data-i18n="r_fusion_formula">variable Y · banish 1 as ammo</span>
-      </div>
-      <div class="chip-strip" id="fusionChips"></div>
-    </div>
-    <p class="arsenal-hint" id="arsenalHint"></p>
-  </section>
-
-  <section class="panel">
-    <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2><span data-i18n="h_solutions">Firing Solutions</span> <span class="meta" id="solCount"></span></h2>
-    <div class="solutions-grid" id="solutions"></div>
-    <div class="no-solutions" id="noSols" style="display:none;">
-      <span class="glyph">⚷</span>
-      <span id="noSolMsg">The Manor lies silent.</span>
-      <span class="hint" id="noSolHint">Adjust the field state, or unlock more Extra Deck ranks/levels.</span>
-    </div>
-  </section>
-
-  <section class="panel">
-    <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2 data-i18n="h_whatif">What-If Fluctuations</h2>
-    <div class="quick-actions">
-      <button class="quick-btn" data-quick="myHand+1">
-        <span class="qb-action" data-i18n="qb_draw">Draw</span>
-        <span class="qb-effect" data-i18n="qb_draw_eff">→ Your Hand +1</span>
-      </button>
-      <button class="quick-btn" data-quick="myHand-1">
-        <span class="qb-action" data-i18n="qb_discard">Discard</span>
-        <span class="qb-effect" data-i18n="qb_discard_eff">→ Your Hand −1</span>
-      </button>
-      <button class="quick-btn" data-quick="field+1">
-        <span class="qb-action" data-i18n="qb_summon">Summon</span>
-        <span class="qb-effect" data-i18n="qb_summon_eff">→ Field +1</span>
-      </button>
-      <button class="quick-btn" data-quick="field-1">
-        <span class="qb-action" data-i18n="qb_destroy">Destroy</span>
-        <span class="qb-effect" data-i18n="qb_destroy_eff">→ Field −1</span>
-      </button>
-      <button class="quick-btn" data-quick="oppHand+1">
-        <span class="qb-action" data-i18n="qb_oppdraw">Opp Draws</span>
-        <span class="qb-effect" data-i18n="qb_oppdraw_eff">→ Opp Hand +1</span>
-      </button>
-      <button class="quick-btn" data-quick="oppHand-1">
-        <span class="qb-action" data-i18n="qb_oppdiscard">Opp Discards</span>
-        <span class="qb-effect" data-i18n="qb_oppdiscard_eff">→ Opp Hand −1</span>
-      </button>
-    </div>
-
-    <div class="adjacent-label" data-i18n="adj_label">Adjacent Totals · click to jump · firing count at T ± 3</div>
-    <div class="adjacent-grid" id="adjacent"></div>
-  </section>
+  </div>
 
   <footer class="seal">
     <span class="greeting" data-i18n="seal_greeting">Welcome back, Lady Labrynth.</span>
@@ -1231,11 +1351,11 @@ const i18n = {
     eq1: 'total cards on field & both hands',
     eq2_pre: 'X + Y',
     eq2: 'rank/level of target → wipes opponent\'s field',
-    h_state: 'Field & Hands',
-    l_field: 'Cards on Field',
-    l_myhand: 'Your Hand',
-    l_opphand: 'Opponent Hand',
-    h_arsenal: 'Extra Deck & Banished Ammo Pool',
+    h_state: 'Target Reticle',
+    l_total: 'Total Cards · Field + Both Hands',
+    ready_lbl: 'READY',
+    cold_lbl: 'COLD',
+    h_arsenal: 'Ammunition Magazine',
     r_xyz: 'Xyz Ranks',
     r_xyz_formula: 'variable X · banish 1 as ammo',
     r_fusion: 'Fusion Levels',
@@ -1285,11 +1405,11 @@ const i18n = {
     eq1: '场上与双方手卡总数',
     eq2_pre: 'X + Y',
     eq2: '指定目标阶级/等级 → 横扫对手场面',
-    h_state: '场地与手卡',
-    l_field: '场上卡数',
-    l_myhand: '己方手卡',
-    l_opphand: '对手手卡',
-    h_arsenal: '额外卡组 & 除外区弹药库',
+    h_state: '目标瞄准镜',
+    l_total: '总卡数 · 场上 + 双方手卡',
+    ready_lbl: '就绪',
+    cold_lbl: '冷却',
+    h_arsenal: '弹药库',
     r_xyz: 'Xyz 阶级',
     r_xyz_formula: '变量 X · 除外 1 张作为弹药',
     r_fusion: '融合等级',
@@ -1393,22 +1513,20 @@ function buildDefaultCounts(range, defaults, max) {
 }
 
 const state = {
-  field: 0,
-  myHand: 0,
-  oppHand: 0,
+  total: 0,
   xyzCount:    buildDefaultCounts(RANK_RANGE,  DEFAULT_XYZ_PAIRS,    XYZ_MAX),
   fusionCount: buildDefaultCounts(LEVEL_RANGE, DEFAULT_FUSION_SOLOS, FUSION_MAX),
   lang: 'zh',
 };
 
-const STORAGE = 'labrynth-cannons-v3';
+const STORAGE = 'labrynth-cannons-v4';
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null');
     if (saved) {
-      state.field   = +saved.field   || 0;
-      state.myHand  = +saved.myHand  || 0;
-      state.oppHand = +saved.oppHand || 0;
+      // Forward-compat: prefer saved.total; fall back to summed legacy fields.
+      if (typeof saved.total === 'number') state.total = clamp(saved.total | 0, 0, 60);
+      else state.total = clamp(((+saved.field || 0) + (+saved.myHand || 0) + (+saved.oppHand || 0)) | 0, 0, 60);
       const restore = (obj, range, max) => {
         const out = {};
         for (const v of range) {
@@ -1427,9 +1545,7 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE, JSON.stringify({
-      field: state.field,
-      myHand: state.myHand,
-      oppHand: state.oppHand,
+      total: state.total,
       xyzCount:    state.xyzCount,
       fusionCount: state.fusionCount,
       lang: state.lang,
@@ -1510,17 +1626,13 @@ function countSolutions(total) {
 }
 
 function renderCounters() {
-  $('#cField').value   = state.field;
-  $('#cMyHand').value  = state.myHand;
-  $('#cOppHand').value = state.oppHand;
-  $('#eqField').textContent   = state.field;
-  $('#eqMyHand').textContent  = state.myHand;
-  $('#eqOppHand').textContent = state.oppHand;
-
-  const total = state.field + state.myHand + state.oppHand;
+  const inp = $('#cTotal');
+  if (inp) inp.value = state.total;
   const totalEl = $('#totalNum');
-  totalEl.textContent = total;
-  totalEl.classList.toggle('empty', total === 0);
+  if (totalEl) {
+    totalEl.textContent = state.total;
+    totalEl.classList.toggle('empty', state.total === 0);
+  }
 }
 
 /* Render a chip with pip slots. Each pip shows one copy's state:
@@ -1575,7 +1687,7 @@ function renderArsenal() {
 }
 
 function renderSolutions() {
-  const total = state.field + state.myHand + state.oppHand;
+  const total = state.total;
   const grid    = $('#solutions');
   const noSols  = $('#noSols');
   const countEl = $('#solCount');
@@ -1681,7 +1793,7 @@ function renderSolutions() {
 }
 
 function renderAdjacent() {
-  const total = state.field + state.myHand + state.oppHand;
+  const total = state.total;
   const grid = $('#adjacent');
   grid.replaceChildren();
   for (const d of [-3, -2, -1, 0, 1, 2, 3]) {
@@ -1715,30 +1827,38 @@ function render() {
   renderCounters();
   renderSolutions();
   renderAdjacent();
+  // "Firing ready" mode — solutions exist → cannon is charged → pulse the UI
+  const count = countSolutions(state.total);
+  const isReady = state.total > 0 && count > 0;
+  const isCold  = state.total > 0 && count === 0;
+  document.body.classList.toggle('firing-ready', isReady);
+  document.body.classList.toggle('firing-cold',  isCold);
+  const pip = $('#readyPip');
+  if (pip) pip.textContent = isReady ? t('ready_lbl') : (isCold ? t('cold_lbl') : '');
   saveState();
 }
 
 function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
 
-function setCount(key, val) {
-  const max = key === 'field' ? 40 : 20;
-  state[key] = clamp(val | 0, 0, max);
+function setTotal(val) {
+  state.total = clamp(val | 0, 0, 60);
   render();
 }
 
-$$('.step-btn').forEach(btn => {
+// Single total stepper — every game action (summon, draw, discard, opponent
+// draws, etc.) just shifts the total by ±1, so one pair of buttons is enough.
+$$('.total-step').forEach(btn => {
   btn.addEventListener('click', () => {
-    const key = btn.dataset.step;
     const dir = +btn.dataset.dir;
-    setCount(key, state[key] + dir);
+    setTotal(state.total + dir);
   });
 });
 
-[['cField','field'], ['cMyHand','myHand'], ['cOppHand','oppHand']].forEach(([id, key]) => {
-  const inp = $('#' + id);
-  inp.addEventListener('input', () => setCount(key, +inp.value || 0));
-  inp.addEventListener('blur',  () => { inp.value = state[key]; });
-});
+const totalInput = $('#cTotal');
+if (totalInput) {
+  totalInput.addEventListener('input', () => setTotal(+totalInput.value || 0));
+  totalInput.addEventListener('blur',  () => { totalInput.value = state.total; });
+}
 
 document.addEventListener('click', e => {
   const chip = e.target.closest('.chip');
@@ -1750,15 +1870,7 @@ document.addEventListener('click', e => {
   render();
 });
 
-$$('.quick-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const action = btn.dataset.quick;
-    const m = action.match(/^(\w+)([+-])(\d+)$/);
-    if (!m) return;
-    const [, key, op, n] = m;
-    setCount(key, state[key] + (op === '+' ? +n : -+n));
-  });
-});
+// (Legacy quick-action buttons removed — single total stepper replaces them.)
 
 // Click an adjacent-total cell to jump the total to that value (adjusts Field
 // by the cell's delta). Adjusts Field rather than hands since Field changes
@@ -1767,7 +1879,7 @@ $('#adjacent').addEventListener('click', e => {
   const cell = e.target.closest('.adj-cell');
   if (!cell || cell.classList.contains('current') || cell.classList.contains('cold')) return;
   const d = +cell.dataset.delta;
-  setCount('field', state.field + d);
+  setTotal(state.total + d);
 });
 
 /* FIRE — execute the SEC two-step effect.
