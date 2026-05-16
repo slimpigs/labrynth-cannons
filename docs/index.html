@@ -14,31 +14,31 @@
    Palette: deep velvet + wine red + ornate gold + ivory parchment.
    ============================================================ */
 :root {
-  /* Lady Labrynth's gown — ivory/cream dominant, crimson velvet drama,
-     ornate gold trim, deep wine for ink and shadow. The Versailles-side
-     of the Labrynth aesthetic, not the dim-mansion side. */
-  --void: #faf2dc;            /* page background — cream paper */
-  --hall: #f6ead0;            /* panels — ivory gown body */
-  --wall: #ecd8a8;            /* deeper parchment */
-  --frame: #c89048;           /* gilded trim */
-  --wine-deep: #4a0816;
-  --wine: #8a0e28;
-  --crimson: #b8002e;         /* Lady's signature crimson */
+  /* Labrynth white — Lady Labrynth's ivory gown is the page, with crimson
+     velvet drama, deep wine ink, and gold ornaments as ACCENTS only. The
+     dominant should read as clean off-white, not yellow-cream. */
+  --void: #fbf8f0;            /* page bg — clean off-white (not yellow) */
+  --hall: #ffffff;             /* panels — pure white */
+  --wall: #f0e8d8;             /* deeper warm layer for emphasis */
+  --frame: #a87830;            /* darker gold trim — visible on white */
+  --wine-deep: #3a0612;
+  --wine: #80042a;
+  --crimson: #b8002e;          /* Lady's crimson */
   --blood: #d83056;
-  --rose: #f06080;
-  --gold-deep: #8a6028;
-  --gold: #c89048;
-  --gold-bright: #e8b860;
-  --gold-pale: #f8e4b8;
-  --gold-glow: rgba(232, 184, 96, 0.45);
-  --ivory: #2a1812;           /* now PRIMARY TEXT — dark ink on cream */
-  --parchment: #4e3220;       /* secondary text */
-  --ash: #786050;             /* tertiary text */
-  --ash-deep: #c8a878;        /* dividers/inactive borders */
-  --cannon: #6a48dc;
-  --cannon-bright: #5832b0;   /* slightly darker so it reads on cream */
-  --cannon-glow: rgba(106, 72, 220, 0.40);
-  --shadow: rgba(60, 10, 22, 0.18);
+  --rose: #e84068;
+  --gold-deep: #6a4818;
+  --gold: #b08038;
+  --gold-bright: #c88840;
+  --gold-pale: #e8b870;
+  --gold-glow: rgba(176, 128, 56, 0.40);
+  --ivory: #1a0e08;            /* primary text — dark espresso, high contrast */
+  --parchment: #3a2418;        /* secondary text */
+  --ash: #604a3a;              /* tertiary — darker than before for readability */
+  --ash-deep: #c0a878;         /* dividers/borders */
+  --cannon: #4828a0;           /* deeper purple for contrast on white */
+  --cannon-bright: #6038c0;
+  --cannon-glow: rgba(72, 40, 160, 0.40);
+  --shadow: rgba(60, 10, 22, 0.10);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,10 +57,10 @@ body::before {
   content: '';
   position: fixed; inset: 0;
   background:
-    radial-gradient(ellipse at 18% -5%, rgba(232, 184, 96, 0.25), transparent 55%),
-    radial-gradient(ellipse at 82% 0%, rgba(184, 0, 46, 0.10), transparent 50%),
-    radial-gradient(ellipse at 50% 110%, rgba(106, 72, 220, 0.06), transparent 60%),
-    linear-gradient(180deg, var(--void) 0%, #f4e8c4 50%, var(--wall));
+    radial-gradient(ellipse at 18% -5%, rgba(184, 0, 46, 0.05), transparent 55%),
+    radial-gradient(ellipse at 82% 0%, rgba(176, 128, 56, 0.10), transparent 50%),
+    radial-gradient(ellipse at 50% 110%, rgba(72, 40, 160, 0.04), transparent 60%),
+    linear-gradient(180deg, var(--void) 0%, #f5f0e4 60%, #ece0cc);
   z-index: -2;
 }
 /* Damask in deep gold on cream — subtler than dark-on-dark */
@@ -244,16 +244,16 @@ body::after {
 
 section.panel {
   background:
-    linear-gradient(180deg, rgba(253, 246, 227, 0.96), rgba(246, 234, 208, 0.92));
+    linear-gradient(180deg, #ffffff 0%, #fafaf2 100%);
   border: 1px solid var(--gold);
   border-radius: 2px;
   padding: 26px 28px;
   margin-bottom: 24px;
   position: relative;
   box-shadow:
-    0 2px 18px rgba(60, 10, 22, 0.10),
-    inset 0 1px 0 rgba(248, 228, 184, 0.6),
-    inset 0 -1px 0 rgba(138, 96, 40, 0.18);
+    0 2px 18px rgba(60, 10, 22, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(168, 120, 48, 0.20);
 }
 section.panel::before,
 section.panel::after {
@@ -320,7 +320,7 @@ section.panel h2 .meta {
   margin-bottom: 18px;
 }
 .counter {
-  background: linear-gradient(180deg, rgba(252, 245, 220, 0.9), rgba(232, 200, 144, 0.32));
+  background: linear-gradient(180deg, #ffffff 0%, #faf4e4 100%);
   border: 1px solid var(--ash-deep);
   border-radius: 1px;
   padding: 16px 14px;
@@ -330,7 +330,7 @@ section.panel h2 .meta {
 }
 .counter:hover {
   border-color: var(--gold);
-  box-shadow: 0 0 14px rgba(200, 144, 72, 0.32);
+  box-shadow: 0 0 12px rgba(168, 120, 48, 0.24);
 }
 .counter .label {
   font-family: 'Cinzel', serif;
@@ -557,13 +557,13 @@ section.panel h2 .meta {
 .solution-card {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(253, 246, 227, 0.96), rgba(246, 234, 208, 0.85));
+    linear-gradient(180deg, #ffffff 0%, #fafaf0 100%);
   border: 1px solid var(--gold);
   border-radius: 2px;
   padding: 18px 16px 14px;
   overflow: hidden;
   animation: solutionReveal 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.02) backwards;
-  box-shadow: 0 2px 14px rgba(60, 10, 22, 0.10);
+  box-shadow: 0 2px 14px rgba(60, 10, 22, 0.08);
 }
 .solution-card::before {
   content: '';
@@ -610,7 +610,7 @@ section.panel h2 .meta {
   margin-bottom: 12px;
 }
 .ammo-card {
-  background: linear-gradient(180deg, rgba(252, 245, 220, 0.85), rgba(232, 200, 144, 0.30));
+  background: linear-gradient(180deg, #ffffff, #f6efde);
   border: 1px solid var(--gold);
   border-radius: 1px;
   padding: 9px 6px 8px;
@@ -1229,8 +1229,8 @@ const LEVEL_RANGE = [1,2,3,4,5,6,7,8,9,10,11,12];
 // a valid fresh-ammo source AND a valid C-substitution at the same time.
 const XYZ_MAX    = 2;  // max copies per rank
 const FUSION_MAX = 1;  // max copies per level
-const DEFAULT_XYZ_PAIRS    = [3, 4, 7, 8];        // ranks that default to 2 copies
-const DEFAULT_FUSION_SOLOS = [5, 6, 8, 10];       // levels that default to 1 copy
+const DEFAULT_XYZ_PAIRS    = [3, 4, 5, 6];               // ranks that default to 2 copies
+const DEFAULT_FUSION_SOLOS = [1, 2, 3, 4, 5, 6];         // levels that default to 1 copy
 
 function buildDefaultCounts(range, defaults, max) {
   const out = {};
@@ -1246,7 +1246,7 @@ const state = {
   oppHand: 0,
   xyzCount:    buildDefaultCounts(RANK_RANGE,  DEFAULT_XYZ_PAIRS,    XYZ_MAX),
   fusionCount: buildDefaultCounts(LEVEL_RANGE, DEFAULT_FUSION_SOLOS, FUSION_MAX),
-  lang: 'en',
+  lang: 'zh',
 };
 
 const STORAGE = 'labrynth-cannons-v3';
