@@ -428,96 +428,167 @@ section.panel h2 .meta {
   .terminal-grid { grid-template-columns: 1fr; }
 }
 
-/* TARGET RETICLE block — large T readout */
+/* TARGET RETICLE block — large T readout sitting inside an elaborate radar scope */
 .total-block {
   text-align: center;
-  padding: 8px 0 14px;
+  padding: 30px 0 30px;
   border-top: 1px solid var(--cyan-deep);
   border-bottom: 1px solid var(--cyan-deep);
   margin-bottom: 18px;
   background: linear-gradient(180deg, rgba(0, 212, 255, 0) 0%, rgba(0, 212, 255, 0.06) 50%, rgba(0, 212, 255, 0) 100%);
   position: relative;
+  overflow: hidden;
+}
+/* Content above the radar */
+.total-readout, .total-stepper-row, .total-caption {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================================
-   RADAR SCOPE — full-page sweeping radar behind ALL content.
-   Centered on the viewport, sized to ~140vmin so it dominates
-   the background without forcing scroll. Mixes additively with
-   the cyber-grid body::after pattern beneath it.
+   SCOPE RADAR — elaborate localized radar centered on the
+   Target Reticle's big T readout. Rings + compass ticks +
+   diagonal crosshairs + corner brackets + sweep cone + blips.
+   Sized at 240px so the animation cost is trivial.
    ============================================================ */
-.bg-radar {
-  position: fixed;
+.scope-radar {
+  position: absolute;
   top: 50%; left: 50%;
-  width: 140vmin; height: 140vmin;
-  margin: -70vmin 0 0 -70vmin;
+  width: 240px; height: 240px;
+  margin: -120px 0 0 -120px;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.85;
 }
-.bg-radar .radar-ring {
-  position: absolute;
-  border: 1px solid rgba(0, 212, 255, 0.12);
-  border-radius: 50%;
-  box-shadow: inset 0 0 40px rgba(0, 212, 255, 0.04);
-  transition: border-color 0.4s ease;
-}
-.bg-radar .radar-ring.r1 { inset: 0%; }
-.bg-radar .radar-ring.r2 { inset: 14%; border-color: rgba(0, 212, 255, 0.10); }
-.bg-radar .radar-ring.r3 { inset: 30%; border-color: rgba(0, 212, 255, 0.10); }
-.bg-radar .radar-ring.r4 { inset: 46%; border-color: rgba(0, 212, 255, 0.08); }
-.bg-radar .radar-cross {
-  position: absolute;
-  background: rgba(0, 212, 255, 0.07);
-  pointer-events: none;
-}
-.bg-radar .radar-cross.v { left: 50%; top: 2%; bottom: 2%; width: 1px; margin-left: -0.5px; }
-.bg-radar .radar-cross.h { top: 50%; left: 2%; right: 2%; height: 1px; margin-top: -0.5px; }
 
-/* Rotating sweep cone — GPU-friendly: no blend modes, no blur.
-   Pure rotation transform animates on the compositor with no layout/paint. */
-.bg-radar .radar-sweep {
+/* Concentric rings */
+.scope-radar .ring {
+  position: absolute;
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  border-radius: 50%;
+  box-shadow: inset 0 0 24px rgba(0, 212, 255, 0.06);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.scope-radar .ring.r1 { inset: 0; }
+.scope-radar .ring.r2 { inset: 18%; border-color: rgba(0, 212, 255, 0.16); }
+.scope-radar .ring.r3 { inset: 36%; border-color: rgba(0, 212, 255, 0.12); }
+
+/* Crosshairs — orthogonal + diagonal */
+.scope-radar .cross {
+  position: absolute;
+}
+.scope-radar .cross.v { left: 50%; top: 6%; bottom: 6%; width: 1px; margin-left: -0.5px;
+  background: rgba(0, 212, 255, 0.18); }
+.scope-radar .cross.h { top: 50%; left: 6%; right: 6%; height: 1px; margin-top: -0.5px;
+  background: rgba(0, 212, 255, 0.18); }
+.scope-radar .cross.d1, .scope-radar .cross.d2 {
+  top: 50%; left: 50%;
+  width: 200px; height: 1px;
+  margin-left: -100px; margin-top: -0.5px;
+  background: rgba(0, 212, 255, 0.08);
+  transform-origin: center;
+}
+.scope-radar .cross.d1 { transform: rotate(45deg); }
+.scope-radar .cross.d2 { transform: rotate(-45deg); }
+
+/* Compass tick marks around the outer ring — 12 ticks at 30° intervals */
+.scope-radar .tick {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 2px; height: 8px;
+  margin-left: -1px; margin-top: -4px;
+  background: rgba(0, 212, 255, 0.45);
+  box-shadow: 0 0 3px rgba(0, 212, 255, 0.5);
+  transform-origin: center;
+  transform: rotate(var(--angle)) translateY(-116px);
+}
+/* The 4 compass-point ticks (N/E/S/W) are bigger and brighter */
+.scope-radar .tick.compass {
+  width: 3px;
+  height: 12px;
+  margin-left: -1.5px;
+  margin-top: -6px;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 6px var(--cyan-glow);
+  transform: rotate(var(--angle)) translateY(-114px);
+}
+
+/* L-shaped corner brackets — frame the radar like a HUD viewfinder */
+.scope-radar .bracket {
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--cyan-bright);
+  box-shadow: 0 0 6px var(--cyan-glow);
+}
+.scope-radar .bracket.br1 { top: 6px;    left: 6px;    border-right: none; border-bottom: none; }
+.scope-radar .bracket.br2 { top: 6px;    right: 6px;   border-left: none;  border-bottom: none; }
+.scope-radar .bracket.br3 { bottom: 6px; left: 6px;    border-right: none; border-top: none; }
+.scope-radar .bracket.br4 { bottom: 6px; right: 6px;   border-left: none;  border-top: none; }
+
+/* Rotating sweep cone — GPU-only transform animation, no blend/blur */
+.scope-radar .sweep {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: conic-gradient(
     from 0deg at 50% 50%,
-    transparent 320deg,
-    rgba(0, 212, 255, 0.22) 354deg,
-    rgba(0, 212, 255, 0.40) 360deg
+    transparent 0deg,
+    transparent 280deg,
+    rgba(0, 212, 255, 0.10) 320deg,
+    rgba(0, 212, 255, 0.28) 350deg,
+    rgba(0, 212, 255, 0.60) 360deg
   );
-  animation: radarSweep 5s linear infinite;
+  animation: scopeSweep 4s linear infinite;
   will-change: transform;
 }
-@keyframes radarSweep {
+@keyframes scopeSweep {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* Pulsing blips scattered around the scope — pings detected on the radar */
-.bg-radar .radar-blip {
+/* Pulsing blips — contacts detected on the scope */
+.scope-radar .blip {
   position: absolute;
-  width: 6px; height: 6px;
+  width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--magenta-bright);
-  box-shadow: 0 0 8px var(--magenta-glow), 0 0 18px var(--magenta-glow);
+  box-shadow: 0 0 6px var(--magenta-glow), 0 0 14px var(--magenta-glow);
 }
-.bg-radar .radar-blip.b1 { top: 18%; left: 72%; animation: blipPulse 5s ease-in-out infinite; }
-.bg-radar .radar-blip.b2 { top: 78%; left: 22%; animation: blipPulse 5s ease-in-out -2.5s infinite;
-  background: var(--cyan-bright); box-shadow: 0 0 8px var(--cyan-glow), 0 0 18px var(--cyan-glow);
-}
-.bg-radar .radar-blip.b3 { top: 35%; left: 12%; animation: blipPulse 5s ease-in-out -3.5s infinite; }
-.bg-radar .radar-blip.b4 { top: 62%; left: 84%; animation: blipPulse 5s ease-in-out -1s infinite;
-  background: var(--cyan-bright); box-shadow: 0 0 8px var(--cyan-glow), 0 0 18px var(--cyan-glow);
-}
+.scope-radar .blip.b1 { top: 22%; left: 70%; animation: blipPulse 4s ease-in-out infinite; }
+.scope-radar .blip.b2 { top: 70%; left: 28%; animation: blipPulse 4s ease-in-out -2s infinite;
+  background: var(--cyan-bright); box-shadow: 0 0 6px var(--cyan-glow), 0 0 14px var(--cyan-glow); }
+.scope-radar .blip.b3 { top: 42%; left: 18%; animation: blipPulse 4s ease-in-out -3s infinite; }
 @keyframes blipPulse {
   0%, 100% { opacity: 0.30; transform: scale(1); }
   50%      { opacity: 1;    transform: scale(1.5); }
 }
 
-/* When firing-ready, the radar speeds up and the rings brighten */
-body.firing-ready .bg-radar .radar-sweep { animation-duration: 3s; }
-body.firing-ready .bg-radar .radar-ring { border-color: rgba(0, 212, 255, 0.20); }
-body.firing-cold  .bg-radar .radar-sweep { animation-duration: 6.5s; opacity: 0.6; }
+/* Center dot — laser lock indicator at the heart of the reticle */
+.scope-radar .center-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 4px; height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 8px var(--cyan-glow), 0 0 16px var(--cyan-glow);
+}
+
+/* State-driven variations — cannon locked-on vs idle */
+body.firing-ready .scope-radar .sweep { animation-duration: 2.2s; }
+body.firing-ready .scope-radar .ring {
+  border-color: rgba(0, 212, 255, 0.40);
+  box-shadow: inset 0 0 32px rgba(0, 212, 255, 0.12);
+}
+body.firing-ready .scope-radar .bracket {
+  border-color: var(--cyan-bright);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+body.firing-cold .scope-radar .sweep { animation-duration: 6s; }
+body.firing-cold .scope-radar .ring { border-color: rgba(255, 32, 128, 0.18); }
+body.firing-cold .scope-radar .bracket {
+  border-color: var(--magenta);
+  box-shadow: 0 0 4px var(--magenta-glow);
+}
 .total-readout {
   display: flex;
   align-items: baseline;
@@ -1471,19 +1542,6 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
   <span></span><span></span><span></span>
 </div>
 
-<div class="bg-radar" aria-hidden="true">
-  <span class="radar-ring r1"></span>
-  <span class="radar-ring r2"></span>
-  <span class="radar-ring r3"></span>
-  <span class="radar-ring r4"></span>
-  <span class="radar-cross v"></span>
-  <span class="radar-cross h"></span>
-  <span class="radar-sweep"></span>
-  <span class="radar-blip b1"></span>
-  <span class="radar-blip b2"></span>
-  <span class="radar-blip b3"></span>
-  <span class="radar-blip b4"></span>
-</div>
 
 <div class="hall">
 
@@ -1509,6 +1567,36 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
       <span class="corner-tr"></span><span class="corner-bl"></span>
       <h2 data-i18n="h_state">Target Reticle</h2>
       <div class="total-block">
+        <div class="scope-radar" aria-hidden="true">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="cross v"></div>
+          <div class="cross h"></div>
+          <div class="cross d1"></div>
+          <div class="cross d2"></div>
+          <div class="tick compass" style="--angle:0deg"></div>
+          <div class="tick" style="--angle:30deg"></div>
+          <div class="tick" style="--angle:60deg"></div>
+          <div class="tick compass" style="--angle:90deg"></div>
+          <div class="tick" style="--angle:120deg"></div>
+          <div class="tick" style="--angle:150deg"></div>
+          <div class="tick compass" style="--angle:180deg"></div>
+          <div class="tick" style="--angle:210deg"></div>
+          <div class="tick" style="--angle:240deg"></div>
+          <div class="tick compass" style="--angle:270deg"></div>
+          <div class="tick" style="--angle:300deg"></div>
+          <div class="tick" style="--angle:330deg"></div>
+          <div class="bracket br1"></div>
+          <div class="bracket br2"></div>
+          <div class="bracket br3"></div>
+          <div class="bracket br4"></div>
+          <div class="sweep"></div>
+          <div class="blip b1"></div>
+          <div class="blip b2"></div>
+          <div class="blip b3"></div>
+          <div class="center-dot"></div>
+        </div>
         <div class="total-readout">
           <span class="total-num" id="totalNum">12</span>
           <span class="total-suffix">T</span>
