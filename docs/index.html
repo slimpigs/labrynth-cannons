@@ -14,28 +14,31 @@
    Palette: deep velvet + wine red + ornate gold + ivory parchment.
    ============================================================ */
 :root {
-  --void: #07020c;
-  --hall: #110618;
-  --wall: #1c0c26;
-  --frame: #3c1832;
-  --wine-deep: #4a0e26;
-  --wine: #780e2e;
-  --crimson: #b40036;
-  --blood: #e6386a;
-  --rose: #f87090;
-  --gold-deep: #6e4c1c;
+  /* Lady Labrynth's gown — ivory/cream dominant, crimson velvet drama,
+     ornate gold trim, deep wine for ink and shadow. The Versailles-side
+     of the Labrynth aesthetic, not the dim-mansion side. */
+  --void: #faf2dc;            /* page background — cream paper */
+  --hall: #f6ead0;            /* panels — ivory gown body */
+  --wall: #ecd8a8;            /* deeper parchment */
+  --frame: #c89048;           /* gilded trim */
+  --wine-deep: #4a0816;
+  --wine: #8a0e28;
+  --crimson: #b8002e;         /* Lady's signature crimson */
+  --blood: #d83056;
+  --rose: #f06080;
+  --gold-deep: #8a6028;
   --gold: #c89048;
-  --gold-bright: #f0c878;
-  --gold-pale: #f8e0a8;
-  --gold-glow: rgba(240, 200, 120, 0.55);
-  --ivory: #f4ecd4;
-  --parchment: #ddc78f;
-  --ash: #8a7468;
-  --ash-deep: #4a3a30;
+  --gold-bright: #e8b860;
+  --gold-pale: #f8e4b8;
+  --gold-glow: rgba(232, 184, 96, 0.45);
+  --ivory: #2a1812;           /* now PRIMARY TEXT — dark ink on cream */
+  --parchment: #4e3220;       /* secondary text */
+  --ash: #786050;             /* tertiary text */
+  --ash-deep: #c8a878;        /* dividers/inactive borders */
   --cannon: #6a48dc;
-  --cannon-bright: #a880ff;
-  --cannon-glow: rgba(168, 128, 255, 0.55);
-  --shadow: rgba(0, 0, 0, 0.55);
+  --cannon-bright: #5832b0;   /* slightly darker so it reads on cream */
+  --cannon-glow: rgba(106, 72, 220, 0.40);
+  --shadow: rgba(60, 10, 22, 0.18);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -54,18 +57,19 @@ body::before {
   content: '';
   position: fixed; inset: 0;
   background:
-    radial-gradient(ellipse at 18% -5%, rgba(232, 184, 112, 0.10), transparent 55%),
-    radial-gradient(ellipse at 82% 0%, rgba(184, 0, 54, 0.10), transparent 50%),
+    radial-gradient(ellipse at 18% -5%, rgba(232, 184, 96, 0.25), transparent 55%),
+    radial-gradient(ellipse at 82% 0%, rgba(184, 0, 46, 0.10), transparent 50%),
     radial-gradient(ellipse at 50% 110%, rgba(106, 72, 220, 0.06), transparent 60%),
-    linear-gradient(180deg, var(--void), #04010a 60%, var(--shadow));
+    linear-gradient(180deg, var(--void) 0%, #f4e8c4 50%, var(--wall));
   z-index: -2;
 }
+/* Damask in deep gold on cream — subtler than dark-on-dark */
 body::after {
   content: '';
   position: fixed; inset: 0;
   background-image:
-    radial-gradient(circle at 40px 40px, rgba(200, 144, 72, 0.04) 1px, transparent 2px),
-    radial-gradient(circle at 80px 80px, rgba(200, 144, 72, 0.03) 1px, transparent 2px);
+    radial-gradient(circle at 40px 40px, rgba(138, 96, 40, 0.10) 1px, transparent 2px),
+    radial-gradient(circle at 80px 80px, rgba(138, 96, 40, 0.07) 1px, transparent 2px);
   background-size: 80px 80px, 160px 160px;
   z-index: -1;
   mask-image: radial-gradient(ellipse at 50% 30%, black 30%, transparent 80%);
@@ -107,6 +111,38 @@ body::after {
   padding: 40px 28px 80px;
   position: relative;
   z-index: 1;
+}
+
+/* Language toggle — top-right of the page */
+.lang-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.lang-btn {
+  padding: 5px 14px;
+  background: rgba(252, 245, 220, 0.7);
+  border: 1px solid var(--gold-deep);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border-radius: 1px;
+}
+.lang-btn:hover {
+  border-color: var(--gold);
+  color: var(--ivory);
+  background: rgba(232, 184, 96, 0.22);
+}
+.lang-btn.active {
+  border-color: var(--gold-bright);
+  background: linear-gradient(180deg, rgba(232, 184, 96, 0.30), rgba(232, 184, 96, 0.12));
+  color: var(--wine);
+  box-shadow: 0 0 8px var(--gold-glow), inset 0 1px 0 rgba(248, 228, 184, 0.4);
 }
 
 .welcome {
@@ -208,16 +244,16 @@ body::after {
 
 section.panel {
   background:
-    linear-gradient(180deg, rgba(28, 12, 38, 0.85), rgba(17, 6, 24, 0.92));
-  border: 1px solid var(--frame);
+    linear-gradient(180deg, rgba(253, 246, 227, 0.96), rgba(246, 234, 208, 0.92));
+  border: 1px solid var(--gold);
   border-radius: 2px;
   padding: 26px 28px;
   margin-bottom: 24px;
   position: relative;
   box-shadow:
-    0 0 24px rgba(120, 14, 46, 0.15),
-    inset 0 1px 0 rgba(240, 200, 120, 0.12),
-    inset 0 -1px 0 rgba(106, 72, 220, 0.08);
+    0 2px 18px rgba(60, 10, 22, 0.10),
+    inset 0 1px 0 rgba(248, 228, 184, 0.6),
+    inset 0 -1px 0 rgba(138, 96, 40, 0.18);
 }
 section.panel::before,
 section.panel::after {
@@ -284,7 +320,7 @@ section.panel h2 .meta {
   margin-bottom: 18px;
 }
 .counter {
-  background: rgba(74, 14, 38, 0.18);
+  background: linear-gradient(180deg, rgba(252, 245, 220, 0.9), rgba(232, 200, 144, 0.32));
   border: 1px solid var(--ash-deep);
   border-radius: 1px;
   padding: 16px 14px;
@@ -294,7 +330,7 @@ section.panel h2 .meta {
 }
 .counter:hover {
   border-color: var(--gold);
-  box-shadow: 0 0 14px rgba(200, 144, 72, 0.22);
+  box-shadow: 0 0 14px rgba(200, 144, 72, 0.32);
 }
 .counter .label {
   font-family: 'Cinzel', serif;
@@ -359,9 +395,9 @@ section.panel h2 .meta {
   justify-content: center;
   gap: 18px;
   padding: 16px;
-  background: linear-gradient(90deg, rgba(74, 14, 38, 0) 0%, rgba(74, 14, 38, 0.4) 50%, rgba(74, 14, 38, 0) 100%);
-  border-top: 1px solid var(--frame);
-  border-bottom: 1px solid var(--frame);
+  background: linear-gradient(90deg, rgba(232, 184, 96, 0) 0%, rgba(232, 184, 96, 0.18) 50%, rgba(232, 184, 96, 0) 100%);
+  border-top: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
   margin-top: 4px;
   flex-wrap: wrap;
 }
@@ -428,7 +464,7 @@ section.panel h2 .meta {
   align-items: center;
   gap: 5px;
   padding: 6px 11px;
-  background: rgba(20, 8, 28, 0.6);
+  background: rgba(252, 245, 220, 0.7);
   border: 1px solid var(--ash-deep);
   border-radius: 1px;
   color: var(--ash);
@@ -442,40 +478,73 @@ section.panel h2 .meta {
 }
 .chip:hover {
   border-color: var(--gold);
-  color: var(--gold-bright);
-  background: rgba(74, 14, 38, 0.4);
+  color: var(--parchment);
+  background: rgba(232, 184, 96, 0.20);
 }
 .chip.extra {
-  border-color: var(--gold-bright);
+  border-color: var(--gold);
   color: var(--ivory);
-  background: linear-gradient(180deg, rgba(184, 0, 54, 0.25), rgba(74, 14, 38, 0.4));
-  box-shadow: 0 0 8px rgba(200, 144, 72, 0.25), inset 0 1px 0 rgba(240, 200, 120, 0.2);
+  background: linear-gradient(180deg, rgba(232, 184, 96, 0.22), rgba(246, 234, 208, 0.55));
+  box-shadow: 0 0 6px rgba(232, 184, 96, 0.30), inset 0 1px 0 rgba(248, 228, 184, 0.4);
   border-left: 3px solid var(--gold-bright);
 }
 .chip.banished {
   border-color: var(--cannon-bright);
   color: var(--ivory);
-  background: linear-gradient(180deg, rgba(106, 72, 220, 0.30), rgba(28, 12, 38, 0.6));
-  box-shadow: 0 0 8px var(--cannon-glow), inset 0 1px 0 rgba(168, 128, 255, 0.22);
+  background: linear-gradient(180deg, rgba(168, 128, 255, 0.18), rgba(246, 234, 208, 0.6));
+  box-shadow: 0 0 6px var(--cannon-glow), inset 0 1px 0 rgba(168, 128, 255, 0.18);
   border-left: 3px solid var(--cannon-bright);
 }
-.chip.banished::after {
-  content: '⚷';
-  margin-left: 3px;
-  font-size: 9px;
-  color: var(--cannon-bright);
-  text-shadow: 0 0 4px var(--cannon-glow);
+.chip.mixed {
+  border-color: var(--gold);
+  color: var(--ivory);
+  background: linear-gradient(135deg, rgba(232, 184, 96, 0.22) 0%, rgba(232, 184, 96, 0.22) 50%, rgba(168, 128, 255, 0.20) 50%, rgba(168, 128, 255, 0.20) 100%);
+  box-shadow: 0 0 6px rgba(232, 184, 96, 0.25), inset 0 1px 0 rgba(248, 228, 184, 0.3);
+  border-left: 3px solid var(--gold-bright);
+  border-right: 3px solid var(--cannon-bright);
+}
+
+/* Chip pip indicators — show count of copies in each zone */
+.chip {
+  align-items: center;
+  gap: 7px;
+}
+.chip-label {
+  font-weight: 700;
+}
+.chip-pips {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.pip {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--ash);
+  background: transparent;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+.pip.extra {
+  background: var(--gold-bright);
+  border-color: var(--gold);
+  box-shadow: 0 0 4px var(--gold-glow);
+}
+.pip.banished {
+  background: var(--cannon-bright);
+  border-color: var(--cannon);
+  box-shadow: 0 0 4px var(--cannon-glow);
 }
 
 .arsenal-hint {
   margin-top: 12px;
   font-style: italic;
   font-size: 13px;
-  color: var(--ash);
+  color: var(--parchment);
   letter-spacing: 0.02em;
   padding: 10px 14px;
-  border-left: 2px solid var(--gold-deep);
-  background: rgba(20, 8, 28, 0.35);
+  border-left: 2px solid var(--gold);
+  background: rgba(232, 184, 96, 0.10);
 }
 .arsenal-hint .key { color: var(--gold-bright); font-style: normal; }
 .arsenal-hint .note { color: var(--cannon-bright); font-style: normal; }
@@ -488,12 +557,13 @@ section.panel h2 .meta {
 .solution-card {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(74, 14, 38, 0.45), rgba(28, 12, 38, 0.85));
-  border: 1px solid var(--gold-deep);
+    linear-gradient(180deg, rgba(253, 246, 227, 0.96), rgba(246, 234, 208, 0.85));
+  border: 1px solid var(--gold);
   border-radius: 2px;
   padding: 18px 16px 14px;
   overflow: hidden;
   animation: solutionReveal 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.02) backwards;
+  box-shadow: 0 2px 14px rgba(60, 10, 22, 0.10);
 }
 .solution-card::before {
   content: '';
@@ -540,8 +610,8 @@ section.panel h2 .meta {
   margin-bottom: 12px;
 }
 .ammo-card {
-  background: rgba(20, 8, 28, 0.7);
-  border: 1px solid var(--gold-deep);
+  background: linear-gradient(180deg, rgba(252, 245, 220, 0.85), rgba(232, 200, 144, 0.30));
+  border: 1px solid var(--gold);
   border-radius: 1px;
   padding: 9px 6px 8px;
   text-align: center;
@@ -589,13 +659,13 @@ section.panel h2 .meta {
 }
 
 .sol-target {
-  background: linear-gradient(180deg, rgba(184, 0, 54, 0.18), rgba(74, 14, 38, 0.45));
+  background: linear-gradient(180deg, rgba(184, 0, 46, 0.10), rgba(154, 24, 48, 0.06));
   border: 1px solid var(--crimson);
   border-radius: 1px;
   padding: 10px 8px;
   text-align: center;
   position: relative;
-  box-shadow: inset 0 0 10px rgba(184, 0, 54, 0.18);
+  box-shadow: inset 0 0 10px rgba(184, 0, 46, 0.10);
 }
 .sol-target .target-label {
   font-family: 'Cinzel', serif;
@@ -609,9 +679,9 @@ section.panel h2 .meta {
   font-family: 'Cinzel', serif;
   font-size: 28px;
   font-weight: 700;
-  color: var(--ivory);
+  color: var(--wine);
   line-height: 1;
-  text-shadow: 0 0 10px rgba(232, 56, 106, 0.5), 0 0 20px rgba(184, 0, 54, 0.3);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.10), 0 0 10px rgba(184, 0, 46, 0.25);
 }
 .sol-target .target-tag {
   font-family: 'Cormorant Garamond', serif;
@@ -634,17 +704,73 @@ section.panel h2 .meta {
 }
 .sol-math .ok { color: var(--gold-bright); }
 
+/* Substitution targets — per banished-Xyz substitution C+Y */
+.sol-subs {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--frame);
+}
+.sol-subs .subs-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.26em;
+  color: var(--cannon-bright);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-align: center;
+  text-shadow: 0 0 4px var(--cannon-glow);
+}
+.sol-subs .subs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.sub-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 8px 3px;
+  background: linear-gradient(180deg, rgba(106, 72, 220, 0.20), rgba(20, 8, 28, 0.6));
+  border: 1px solid var(--cannon);
+  border-left: 2px solid var(--cannon-bright);
+  border-radius: 1px;
+  cursor: default;
+  transition: all 0.18s ease;
+}
+.sub-pill:hover {
+  background: linear-gradient(180deg, rgba(106, 72, 220, 0.30), rgba(20, 8, 28, 0.7));
+  box-shadow: 0 0 6px var(--cannon-glow);
+}
+.sub-pill .sub-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ivory);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 6px var(--cannon-glow);
+  line-height: 1.1;
+}
+.sub-pill .sub-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--cannon-bright);
+  margin-top: 1px;
+}
+
 .no-solutions {
   padding: 30px 16px;
   text-align: center;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 16px;
-  color: var(--ash);
-  border: 1px dashed var(--frame);
+  color: var(--parchment);
+  border: 1px dashed var(--gold);
   border-radius: 1px;
-  background: rgba(28, 12, 38, 0.4);
+  background: rgba(252, 245, 220, 0.55);
 }
+.no-solutions .glyph { color: var(--gold-deep); }
 .no-solutions .glyph {
   display: block;
   font-size: 28px;
@@ -668,10 +794,10 @@ section.panel h2 .meta {
 }
 .quick-btn {
   padding: 10px 12px;
-  background: transparent;
+  background: rgba(252, 245, 220, 0.7);
   border: 1px solid var(--ash-deep);
   border-radius: 1px;
-  color: var(--parchment);
+  color: var(--ivory);
   font-family: 'Cormorant Garamond', serif;
   font-size: 13px;
   font-weight: 500;
@@ -699,9 +825,9 @@ section.panel h2 .meta {
 }
 .quick-btn:hover {
   border-color: var(--gold);
-  background: rgba(74, 14, 38, 0.3);
+  background: rgba(232, 184, 96, 0.22);
   transform: translateX(2px);
-  box-shadow: -2px 0 0 var(--blood);
+  box-shadow: -2px 0 0 var(--crimson);
 }
 
 .adjacent-label {
@@ -719,31 +845,39 @@ section.panel h2 .meta {
   gap: 6px;
 }
 .adj-cell {
-  background: rgba(20, 8, 28, 0.5);
+  background: rgba(252, 245, 220, 0.7);
   border: 1px solid var(--ash-deep);
   border-radius: 1px;
   padding: 9px 6px;
   text-align: center;
-  cursor: default;
+  cursor: pointer;
   transition: all 0.18s ease;
   display: flex;
   flex-direction: column;
   gap: 3px;
+  user-select: none;
+}
+.adj-cell:hover:not(.current):not(.cold) {
+  border-color: var(--crimson);
+  background: rgba(232, 184, 96, 0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(60, 10, 22, 0.10);
 }
 .adj-cell.current {
-  border-color: var(--gold-bright);
-  background: linear-gradient(180deg, rgba(184, 0, 54, 0.2), rgba(74, 14, 38, 0.5));
-  box-shadow: 0 0 12px rgba(232, 184, 112, 0.25), inset 0 0 8px rgba(184, 0, 54, 0.15);
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(184, 0, 46, 0.10), rgba(232, 184, 96, 0.25));
+  box-shadow: 0 0 12px rgba(232, 184, 96, 0.30), inset 0 0 8px rgba(184, 0, 46, 0.10);
+  cursor: default;
 }
 .adj-cell.hot { border-color: var(--gold); }
-.adj-cell.cold { opacity: 0.45; }
+.adj-cell.cold { opacity: 0.45; cursor: default; }
 .adj-cell .adj-delta {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   letter-spacing: 0.14em;
   color: var(--ash);
 }
-.adj-cell.current .adj-delta { color: var(--gold-bright); }
+.adj-cell.current .adj-delta { color: var(--wine); font-weight: 700; }
 .adj-cell .adj-t {
   font-family: 'Cinzel', serif;
   font-size: 18px;
@@ -756,7 +890,7 @@ section.panel h2 .meta {
   font-family: 'JetBrains Mono', monospace;
   font-size: 8px;
   letter-spacing: 0.16em;
-  color: var(--rose);
+  color: var(--wine);
   text-transform: uppercase;
 }
 .adj-cell.cold .adj-count, .adj-cell.zero .adj-count { color: var(--ash-deep); }
@@ -805,22 +939,27 @@ section.panel h2 .meta {
 
 <div class="hall">
 
+  <div class="lang-bar">
+    <button class="lang-btn" data-lang="en" type="button">EN</button>
+    <button class="lang-btn" data-lang="zh" type="button">中</button>
+  </div>
+
   <header class="welcome">
     <div class="crest">⚜</div>
-    <h1>Simultaneous Equation Cannons</h1>
-    <div class="subtitle">~ Labrynth Manor Firing Aid ~</div>
+    <h1 data-i18n="title">Simultaneous Equation Cannons</h1>
+    <div class="subtitle" data-i18n="subtitle">~ Labrynth Manor Firing Aid ~</div>
     <div class="equation">
-      <span><strong>2X + Y</strong> <span class="op">=</span> total cards on field &amp; both hands</span>
-      <span><strong>X + Y</strong> <span class="op">=</span> rank/level of target destroyed</span>
+      <span><strong data-i18n="eq1_pre">2X + Y</strong> <span class="op">=</span> <span data-i18n="eq1">total cards on field &amp; both hands</span></span>
+      <span><strong data-i18n="eq2_pre">X + Y</strong> <span class="op">=</span> <span data-i18n="eq2">rank/level of target destroyed</span></span>
     </div>
   </header>
 
   <section class="panel">
     <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2>Field &amp; Hands</h2>
+    <h2 data-i18n="h_state">Field &amp; Hands</h2>
     <div class="counter-grid">
       <div class="counter">
-        <div class="label">Cards on Field</div>
+        <div class="label" data-i18n="l_field">Cards on Field</div>
         <div class="steppers">
           <button class="step-btn" data-step="field" data-dir="-1">−</button>
           <input type="number" class="val" id="cField" value="0" min="0" max="40">
@@ -828,7 +967,7 @@ section.panel h2 .meta {
         </div>
       </div>
       <div class="counter">
-        <div class="label">Your Hand</div>
+        <div class="label" data-i18n="l_myhand">Your Hand</div>
         <div class="steppers">
           <button class="step-btn" data-step="myHand" data-dir="-1">−</button>
           <input type="number" class="val" id="cMyHand" value="0" min="0" max="20">
@@ -836,7 +975,7 @@ section.panel h2 .meta {
         </div>
       </div>
       <div class="counter">
-        <div class="label">Opponent Hand</div>
+        <div class="label" data-i18n="l_opphand">Opponent Hand</div>
         <div class="steppers">
           <button class="step-btn" data-step="oppHand" data-dir="-1">−</button>
           <input type="number" class="val" id="cOppHand" value="0" min="0" max="20">
@@ -854,33 +993,29 @@ section.panel h2 .meta {
 
   <section class="panel">
     <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2>Extra Deck &amp; Banished Ammo Pool</h2>
+    <h2 data-i18n="h_arsenal">Extra Deck &amp; Banished Ammo Pool</h2>
     <div class="arsenal-row">
       <div class="row-label">
         <span class="sigil">◈</span>
-        Xyz Ranks
-        <span class="formula">variable X · banish 1 as ammo</span>
+        <span data-i18n="r_xyz">Xyz Ranks</span>
+        <span class="formula" data-i18n="r_xyz_formula">variable X · banish 1 as ammo</span>
       </div>
       <div class="chip-strip" id="xyzChips"></div>
     </div>
     <div class="arsenal-row">
       <div class="row-label">
         <span class="sigil">◈</span>
-        Fusion Levels
-        <span class="formula">variable Y · banish 1 as ammo</span>
+        <span data-i18n="r_fusion">Fusion Levels</span>
+        <span class="formula" data-i18n="r_fusion_formula">variable Y · banish 1 as ammo</span>
       </div>
       <div class="chip-strip" id="fusionChips"></div>
     </div>
-    <p class="arsenal-hint">
-      Click a chip to cycle through three states:
-      <span class="key">◯ Not owned</span> → <span class="key">◆ Extra Deck</span> (fresh ammo, gold border) → <span class="note">⚷ Banished</span> (already spent once, purple border) → back to not owned.
-      Per the card's effect, both <span class="key">Extra Deck</span> AND <span class="note">Banished</span> cards count as valid ammo for the next firing — so the purple chips give you <em>more combinations</em> across multi-turn play, not fewer.
-    </p>
+    <p class="arsenal-hint" id="arsenalHint"></p>
   </section>
 
   <section class="panel">
     <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2>Firing Solutions <span class="meta" id="solCount"></span></h2>
+    <h2><span data-i18n="h_solutions">Firing Solutions</span> <span class="meta" id="solCount"></span></h2>
     <div class="solutions-grid" id="solutions"></div>
     <div class="no-solutions" id="noSols" style="display:none;">
       <span class="glyph">⚷</span>
@@ -891,41 +1026,41 @@ section.panel h2 .meta {
 
   <section class="panel">
     <span class="corner-tr"></span><span class="corner-bl"></span>
-    <h2>What-If Fluctuations</h2>
+    <h2 data-i18n="h_whatif">What-If Fluctuations</h2>
     <div class="quick-actions">
       <button class="quick-btn" data-quick="myHand+1">
-        <span class="qb-action">Draw</span>
-        <span class="qb-effect">→ Your Hand +1</span>
+        <span class="qb-action" data-i18n="qb_draw">Draw</span>
+        <span class="qb-effect" data-i18n="qb_draw_eff">→ Your Hand +1</span>
       </button>
       <button class="quick-btn" data-quick="myHand-1">
-        <span class="qb-action">Discard</span>
-        <span class="qb-effect">→ Your Hand −1</span>
+        <span class="qb-action" data-i18n="qb_discard">Discard</span>
+        <span class="qb-effect" data-i18n="qb_discard_eff">→ Your Hand −1</span>
       </button>
       <button class="quick-btn" data-quick="field+1">
-        <span class="qb-action">Summon</span>
-        <span class="qb-effect">→ Field +1</span>
+        <span class="qb-action" data-i18n="qb_summon">Summon</span>
+        <span class="qb-effect" data-i18n="qb_summon_eff">→ Field +1</span>
       </button>
       <button class="quick-btn" data-quick="field-1">
-        <span class="qb-action">Destroy</span>
-        <span class="qb-effect">→ Field −1</span>
+        <span class="qb-action" data-i18n="qb_destroy">Destroy</span>
+        <span class="qb-effect" data-i18n="qb_destroy_eff">→ Field −1</span>
       </button>
       <button class="quick-btn" data-quick="oppHand+1">
-        <span class="qb-action">Opp Draws</span>
-        <span class="qb-effect">→ Opp Hand +1</span>
+        <span class="qb-action" data-i18n="qb_oppdraw">Opp Draws</span>
+        <span class="qb-effect" data-i18n="qb_oppdraw_eff">→ Opp Hand +1</span>
       </button>
       <button class="quick-btn" data-quick="oppHand-1">
-        <span class="qb-action">Opp Discards</span>
-        <span class="qb-effect">→ Opp Hand −1</span>
+        <span class="qb-action" data-i18n="qb_oppdiscard">Opp Discards</span>
+        <span class="qb-effect" data-i18n="qb_oppdiscard_eff">→ Opp Hand −1</span>
       </button>
     </div>
 
-    <div class="adjacent-label">Adjacent Totals · firing count at T ± 3</div>
+    <div class="adjacent-label" data-i18n="adj_label">Adjacent Totals · click to jump · firing count at T ± 3</div>
     <div class="adjacent-grid" id="adjacent"></div>
   </section>
 
   <footer class="seal">
-    <span class="greeting">Welcome back, Lady Labrynth.</span>
-    <span class="version">v1 · client-side · zero telemetry</span>
+    <span class="greeting" data-i18n="seal_greeting">Welcome back, Lady Labrynth.</span>
+    <span class="version" data-i18n="seal_version">v3 · client-side · zero telemetry</span>
   </footer>
 
 </div>
@@ -933,6 +1068,148 @@ section.panel h2 .meta {
 <script>
 const $  = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+/* ============================================================
+   i18n — English + 中文 bilingual support.
+   HTML elements with [data-i18n] get their textContent set from
+   the active lang's table. Dynamic strings (e.g. solution-card
+   contents) look up via i18n[lang].key directly.
+   ============================================================ */
+const i18n = {
+  en: {
+    title: 'Simultaneous Equation Cannons',
+    subtitle: '~ Labrynth Manor Firing Aid ~',
+    eq1_pre: '2X + Y',
+    eq1: 'total cards on field & both hands',
+    eq2_pre: 'X + Y',
+    eq2: 'rank/level of target destroyed',
+    h_state: 'Field & Hands',
+    l_field: 'Cards on Field',
+    l_myhand: 'Your Hand',
+    l_opphand: 'Opponent Hand',
+    h_arsenal: 'Extra Deck & Banished Ammo Pool',
+    r_xyz: 'Xyz Ranks',
+    r_xyz_formula: 'variable X · banish 1 as ammo',
+    r_fusion: 'Fusion Levels',
+    r_fusion_formula: 'variable Y · banish 1 as ammo',
+    arsenal_hint_main: 'Click a chip to cycle copies through: ○ empty → ● Extra Deck (gold pip, fresh ammo) → ⚷ Banished (purple pip, spent once) → empty.',
+    arsenal_hint_bold: 'Xyz come in pairs (2 pips), Fusion as singles (1 pip) for typical Labrynth SEC builds.',
+    arsenal_hint_rest: 'Once you fire SEC, one Xyz of the pair moves to banished — but the other copy remains as fresh ammo, AND the banished copy is now available as a target-formula substitution. Per the card\'s effect, the 2X+Y equation needs FRESH (X, Y) from your Extra Deck (banished cards cannot be re-banished). But the target X+Y can be replaced with C+Y for any banished Xyz rank C — so more banished Xyz = more target options per firing.',
+    h_solutions: 'Firing Solutions',
+    sol_count_n: (n, t) => `· ${n} solution${n === 1 ? '' : 's'} for T=${t}`,
+    no_sols_idle: 'Set a field state above to begin.',
+    no_sols_idle_hint: 'The cannons sleep until you describe the battlefield.',
+    no_sols_match: (t) => `No (X, Y) pair in your Extra Deck satisfies 2X + Y = ${t}.`,
+    no_sols_match_hint: 'Adjust field state via the What-If panel below, or expand your Extra Deck ranks/levels.',
+    h_whatif: 'What-If Fluctuations',
+    qb_draw: 'Draw',
+    qb_draw_eff: '→ Your Hand +1',
+    qb_discard: 'Discard',
+    qb_discard_eff: '→ Your Hand −1',
+    qb_summon: 'Summon',
+    qb_summon_eff: '→ Field +1',
+    qb_destroy: 'Destroy',
+    qb_destroy_eff: '→ Field −1',
+    qb_oppdraw: 'Opp Draws',
+    qb_oppdraw_eff: '→ Opp Hand +1',
+    qb_oppdiscard: 'Opp Discards',
+    qb_oppdiscard_eff: '→ Opp Hand −1',
+    adj_label: 'Adjacent Totals · click to jump · firing count at T ± 3',
+    adj_now: 'NOW',
+    shots_n: (n) => `${n} shot${n === 1 ? '' : 's'}`,
+    sol_head: '✦ Firing Solution',
+    ammo_xyz: 'Xyz · X',
+    ammo_fusion: 'Fusion · Y',
+    ammo_tag: 'BANISH',
+    target_label: 'Destroy · primary X+Y',
+    target_tag: (n) => `one monster of Rank or Level ${n}`,
+    subs_label: '+ via banished Xyz · C + Y',
+    sub_title: (C, Y, t) => `Banished R${C} + L${Y} = ${t}`,
+    seal_greeting: 'Welcome back, Lady Labrynth.',
+    seal_version: 'v3 · client-side · zero telemetry',
+  },
+  zh: {
+    title: '联立方程加农炮',
+    subtitle: '~ 拉比林斯庄园开炮辅助 ~',
+    eq1_pre: '2X + Y',
+    eq1: '场上与双方手卡总数',
+    eq2_pre: 'X + Y',
+    eq2: '可摧毁怪兽的阶级 / 等级',
+    h_state: '场地与手卡',
+    l_field: '场上卡数',
+    l_myhand: '己方手卡',
+    l_opphand: '对手手卡',
+    h_arsenal: '额外卡组 & 除外区弹药库',
+    r_xyz: 'Xyz 阶级',
+    r_xyz_formula: '变量 X · 除外 1 张作为弹药',
+    r_fusion: '融合等级',
+    r_fusion_formula: '变量 Y · 除外 1 张作为弹药',
+    arsenal_hint_main: '点击芯片切换每张牌的状态：○ 没有 → ● 额外卡组（金色，可作为新鲜弹药）→ ⚷ 除外区（紫色，已使用过一次）→ 没有。',
+    arsenal_hint_bold: '典型的拉比林斯 SEC 构筑：Xyz 以两张为一对（2 个点位），融合各 1 张（1 个点位）。',
+    arsenal_hint_rest: '开炮一次后，一对 Xyz 中的一张进入除外区 —— 但另一张仍可作为新鲜弹药，而且除外区的那张可作为目标公式中的代入项。根据卡的效果：2X + Y 等式需要从额外卡组除外新鲜的 X 和 Y（不能从除外区再除外一次），但目标公式 X + Y 中的 X 可被任意除外区 Xyz 的阶级 C 代入，得到 C + Y —— 除外区 Xyz 越多，每次开炮可选的目标越多。',
+    h_solutions: '开炮方案',
+    sol_count_n: (n, t) => `· T=${t} 时共有 ${n} 种方案`,
+    no_sols_idle: '请在上方设置场况以开始。',
+    no_sols_idle_hint: '在你描述战场之前，加农炮在沉睡。',
+    no_sols_match: (t) => `当前额外卡组中没有满足 2X + Y = ${t} 的 (X, Y) 组合。`,
+    no_sols_match_hint: '使用下方"假设场况"调整场况，或在上方扩展额外卡组的阶级/等级。',
+    h_whatif: '假设场况微调',
+    qb_draw: '抽卡',
+    qb_draw_eff: '→ 己方手卡 +1',
+    qb_discard: '弃牌',
+    qb_discard_eff: '→ 己方手卡 −1',
+    qb_summon: '召唤',
+    qb_summon_eff: '→ 场上 +1',
+    qb_destroy: '破坏',
+    qb_destroy_eff: '→ 场上 −1',
+    qb_oppdraw: '对手抽卡',
+    qb_oppdraw_eff: '→ 对手手卡 +1',
+    qb_oppdiscard: '对手弃牌',
+    qb_oppdiscard_eff: '→ 对手手卡 −1',
+    adj_label: '邻近总数 · 点击跳转 · T ± 3 的方案数',
+    adj_now: '当前',
+    shots_n: (n) => `${n} 种方案`,
+    sol_head: '✦ 开炮方案',
+    ammo_xyz: 'Xyz · X',
+    ammo_fusion: '融合 · Y',
+    ammo_tag: '除外',
+    target_label: '摧毁 · 默认 X+Y',
+    target_tag: (n) => `一只阶级或等级为 ${n} 的怪兽`,
+    subs_label: '+ 通过除外区 Xyz · C + Y',
+    sub_title: (C, Y, t) => `除外区 R${C} + L${Y} = ${t}`,
+    seal_greeting: '欢迎回来，拉比林斯大小姐。',
+    seal_version: 'v3 · 浏览器本地运行 · 零遥测',
+  },
+};
+
+function t(key, ...args) {
+  const lang = state.lang || 'en';
+  const v = (i18n[lang] || i18n.en)[key];
+  return typeof v === 'function' ? v(...args) : (v ?? key);
+}
+
+function applyI18n() {
+  const lang = state.lang || 'en';
+  document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+  $$('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const val = (i18n[lang] || i18n.en)[key];
+    if (typeof val === 'string') el.textContent = val;
+  });
+  // Build arsenal hint safely via DOM (no innerHTML)
+  const hint = $('#arsenalHint');
+  if (hint) {
+    hint.replaceChildren();
+    hint.appendChild(document.createTextNode(i18n[lang].arsenal_hint_main + ' '));
+    hint.appendChild(document.createElement('br'));
+    hint.appendChild(makeEl('strong', { text: i18n[lang].arsenal_hint_bold }));
+    hint.appendChild(document.createTextNode(' ' + i18n[lang].arsenal_hint_rest));
+  }
+  // Lang toggle button label
+  $$('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
 
 function makeEl(tag, opts = {}, ...children) {
   const el = document.createElement(tag);
@@ -946,25 +1223,33 @@ function makeEl(tag, opts = {}, ...children) {
 const RANK_RANGE  = [1,2,3,4,5,6,7,8,9,10,11,12];
 const LEVEL_RANGE = [1,2,3,4,5,6,7,8,9,10,11,12];
 
-// Default Extra Deck assumption for a Labrynth deck running SEC.
-const DEFAULT_XYZ    = [3, 4, 7, 8];
-const DEFAULT_FUSION = [5, 6, 8, 10];
+// Typical Labrynth SEC build: Xyz come in PAIRS (2 copies per rank),
+// Fusion as SINGLES (1 copy per level). After 1 SEC activation, an Xyz
+// pair has 1 banished + 1 still in Extra Deck — that rank is now BOTH
+// a valid fresh-ammo source AND a valid C-substitution at the same time.
+const XYZ_MAX    = 2;  // max copies per rank
+const FUSION_MAX = 1;  // max copies per level
+const DEFAULT_XYZ_PAIRS    = [3, 4, 7, 8];        // ranks that default to 2 copies
+const DEFAULT_FUSION_SOLOS = [5, 6, 8, 10];       // levels that default to 1 copy
 
-/* Tri-state model per rank/level: NOT-OWNED (absent from both sets),
-   EXTRA-DECK (in xyzExtra/fusionExtra), or BANISHED (in xyzBanished/
-   fusionBanished). Per SEC's effect, both EXTRA-DECK and BANISHED count
-   as valid ammo for current/future activations. */
+function buildDefaultCounts(range, defaults, max) {
+  const out = {};
+  for (const v of range) {
+    out[v] = { e: defaults.includes(v) ? max : 0, b: 0 };
+  }
+  return out;
+}
+
 const state = {
   field: 0,
   myHand: 0,
   oppHand: 0,
-  xyzExtra:      new Set(DEFAULT_XYZ),
-  xyzBanished:   new Set(),
-  fusionExtra:   new Set(DEFAULT_FUSION),
-  fusionBanished:new Set(),
+  xyzCount:    buildDefaultCounts(RANK_RANGE,  DEFAULT_XYZ_PAIRS,    XYZ_MAX),
+  fusionCount: buildDefaultCounts(LEVEL_RANGE, DEFAULT_FUSION_SOLOS, FUSION_MAX),
+  lang: 'en',
 };
 
-const STORAGE = 'labrynth-cannons-v2';
+const STORAGE = 'labrynth-cannons-v3';
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null');
@@ -972,11 +1257,18 @@ function loadState() {
       state.field   = +saved.field   || 0;
       state.myHand  = +saved.myHand  || 0;
       state.oppHand = +saved.oppHand || 0;
-      const setFrom = (arr, range) => new Set((arr || []).filter(n => range.includes(+n)).map(Number));
-      state.xyzExtra       = setFrom(saved.xyzExtra,       RANK_RANGE);
-      state.xyzBanished    = setFrom(saved.xyzBanished,    RANK_RANGE);
-      state.fusionExtra    = setFrom(saved.fusionExtra,    LEVEL_RANGE);
-      state.fusionBanished = setFrom(saved.fusionBanished, LEVEL_RANGE);
+      const restore = (obj, range, max) => {
+        const out = {};
+        for (const v of range) {
+          const src = obj && obj[v] ? obj[v] : { e: 0, b: 0 };
+          out[v] = { e: clamp(+src.e || 0, 0, max), b: clamp(+src.b || 0, 0, max) };
+          if (out[v].e + out[v].b > max) out[v].b = max - out[v].e;
+        }
+        return out;
+      };
+      state.xyzCount    = restore(saved.xyzCount,    RANK_RANGE,  XYZ_MAX);
+      state.fusionCount = restore(saved.fusionCount, LEVEL_RANGE, FUSION_MAX);
+      if (saved.lang === 'en' || saved.lang === 'zh') state.lang = saved.lang;
     }
   } catch {}
 }
@@ -986,53 +1278,79 @@ function saveState() {
       field: state.field,
       myHand: state.myHand,
       oppHand: state.oppHand,
-      xyzExtra:       [...state.xyzExtra],
-      xyzBanished:    [...state.xyzBanished],
-      fusionExtra:    [...state.fusionExtra],
-      fusionBanished: [...state.fusionBanished],
+      xyzCount:    state.xyzCount,
+      fusionCount: state.fusionCount,
+      lang: state.lang,
     }));
   } catch {}
 }
 
-// Cycle a value through: NOT-OWNED → EXTRA-DECK → BANISHED → NOT-OWNED
+/* Derived ammo pools: a rank/level is "available as fresh ammo" if its
+   Extra Deck count > 0, and "available as substitution" if its banished
+   count > 0. With pairs, the same rank can satisfy BOTH at once. */
+function xyzExtraSet()       { return new Set(Object.keys(state.xyzCount).filter(r => state.xyzCount[r].e > 0).map(Number)); }
+function xyzBanishedSet()    { return new Set(Object.keys(state.xyzCount).filter(r => state.xyzCount[r].b > 0).map(Number)); }
+function fusionExtraSet()    { return new Set(Object.keys(state.fusionCount).filter(l => state.fusionCount[l].e > 0).map(Number)); }
+function fusionBanishedSet() { return new Set(Object.keys(state.fusionCount).filter(l => state.fusionCount[l].b > 0).map(Number)); }
+
+/* Click cycle through compound states.
+   For Xyz (max 2): 0e0b → 1e0b → 2e0b → 1e1b → 0e2b → 0e1b → 0e0b
+   For Fusion (max 1): 0e0b → 1e0b → 0e1b → 0e0b */
 function cycleChipState(pool, val) {
-  const extraSet     = pool === 'xyz' ? state.xyzExtra    : state.fusionExtra;
-  const banishedSet  = pool === 'xyz' ? state.xyzBanished : state.fusionBanished;
-  if (!extraSet.has(val) && !banishedSet.has(val)) {
-    // not-owned → extra deck
-    extraSet.add(val);
-  } else if (extraSet.has(val)) {
-    // extra deck → banished
-    extraSet.delete(val);
-    banishedSet.add(val);
+  const counts = pool === 'xyz' ? state.xyzCount : state.fusionCount;
+  const max    = pool === 'xyz' ? XYZ_MAX        : FUSION_MAX;
+  const c = counts[val];
+  if (max === 2) {
+    const key = `${c.e},${c.b}`;
+    const next = {
+      '0,0': { e: 1, b: 0 },
+      '1,0': { e: 2, b: 0 },
+      '2,0': { e: 1, b: 1 },
+      '1,1': { e: 0, b: 2 },
+      '0,2': { e: 0, b: 1 },
+      '0,1': { e: 0, b: 0 },
+    }[key] || { e: 0, b: 0 };
+    counts[val] = next;
   } else {
-    // banished → not-owned
-    banishedSet.delete(val);
+    const key = `${c.e},${c.b}`;
+    const next = {
+      '0,0': { e: 1, b: 0 },
+      '1,0': { e: 0, b: 1 },
+      '0,1': { e: 0, b: 0 },
+    }[key] || { e: 0, b: 0 };
+    counts[val] = next;
   }
 }
 
-// Ammo pool for the math is the UNION of extra-deck + banished.
-function ammoXyz()    { return new Set([...state.xyzExtra,    ...state.xyzBanished]); }
-function ammoFusion() { return new Set([...state.fusionExtra, ...state.fusionBanished]); }
 
-/* Core math: every (X, Y) where 2X + Y = T and both X (rank) and Y (level)
-   are in the available ammo pool. The pool covers BOTH extra-deck and
-   banished-zone cards, since per SEC's effect either can serve as ammo
-   for subsequent activations. */
-function findSolutions(total, xyzSet, fusionSet) {
+/* Core math.
+   Step 1 (banish cost): X must be an Xyz rank in Extra Deck, Y must be a
+   Fusion level in Extra Deck. Banished cards CANNOT serve as fresh ammo.
+   The equation 2X + Y = total must hold.
+   Step 2 (target): destroyable monster Rank/Level is X + Y by default, but
+   X may be substituted with the Rank C of any Xyz already in the banished
+   zone, expanding the target options to { X+Y } ∪ { C+Y for each banished C }. */
+function findSolutions(total, xyzExtra, fusionExtra, xyzBanished) {
   const sols = [];
-  for (const X of xyzSet) {
+  for (const X of xyzExtra) {
     const needY = total - 2 * X;
-    if (needY >= 1 && fusionSet.has(needY)) {
-      sols.push({ X, Y: needY, target: X + needY });
+    if (needY >= 1 && fusionExtra.has(needY)) {
+      const targets = new Set();
+      targets.add(X + needY);                       // primary
+      for (const C of xyzBanished) targets.add(C + needY); // substitutions
+      sols.push({
+        X, Y: needY,
+        primaryTarget: X + needY,
+        targets: [...targets].sort((a, b) => a - b),
+      });
     }
   }
-  sols.sort((a, b) => a.target - b.target || a.X - b.X);
+  sols.sort((a, b) => a.X - b.X || a.Y - b.Y);
   return sols;
 }
 
 function countSolutions(total) {
-  return findSolutions(total, ammoXyz(), ammoFusion()).length;
+  return findSolutions(total, xyzExtraSet(), fusionExtraSet(), xyzBanishedSet()).length;
 }
 
 function renderCounters() {
@@ -1049,19 +1367,46 @@ function renderCounters() {
   totalEl.classList.toggle('empty', total === 0);
 }
 
-function chipStateClass(pool, val) {
-  const extraSet    = pool === 'xyz' ? state.xyzExtra    : state.fusionExtra;
-  const banishedSet = pool === 'xyz' ? state.xyzBanished : state.fusionBanished;
-  if (extraSet.has(val))    return 'extra';
-  if (banishedSet.has(val)) return 'banished';
-  return ''; // not-owned
+/* Render a chip with pip slots. Each pip shows one copy's state:
+   - gold filled = in Extra Deck (fresh ammo)
+   - purple filled = banished (substitution material)
+   - empty outlined = not owned
+   For a typical Labrynth SEC build, Xyz chips show 2 pips (pairs),
+   Fusion chips show 1 pip (singles). */
+function chipStateSummary(pool, val) {
+  const c = (pool === 'xyz' ? state.xyzCount : state.fusionCount)[val] || { e: 0, b: 0 };
+  if (c.e > 0 && c.b > 0) return 'mixed';   // both extra + banished present
+  if (c.e > 0)            return 'extra';
+  if (c.b > 0)            return 'banished';
+  return '';
 }
 function chipTitle(pool, val) {
-  const cls = chipStateClass(pool, val);
+  const c = (pool === 'xyz' ? state.xyzCount : state.fusionCount)[val] || { e: 0, b: 0 };
   const label = pool === 'xyz' ? ('Rank ' + val) : ('Level ' + val);
-  if (cls === 'extra')    return `${label} — in Extra Deck (fresh ammo). Click to mark as banished.`;
-  if (cls === 'banished') return `${label} — already banished, still usable as ammo. Click to remove.`;
-  return `${label} — not owned. Click to add to Extra Deck.`;
+  const parts = [];
+  if (c.e) parts.push(`${c.e} in Extra Deck`);
+  if (c.b) parts.push(`${c.b} banished`);
+  const desc = parts.length ? parts.join(' · ') : 'not owned';
+  return `${label} — ${desc}. Click to cycle.`;
+}
+
+function buildChip(pool, val, max) {
+  const c = (pool === 'xyz' ? state.xyzCount : state.fusionCount)[val] || { e: 0, b: 0 };
+  const summary = chipStateSummary(pool, val);
+  const chip = makeEl('button', {
+    cls: 'chip ' + pool + (summary ? ' ' + summary : ''),
+    attrs: { 'data-pool': pool, 'data-val': val, type: 'button', title: chipTitle(pool, val) },
+  });
+  chip.appendChild(makeEl('span', { cls: 'chip-label', text: (pool === 'xyz' ? 'R' : 'L') + val }));
+  const pips = makeEl('span', { cls: 'chip-pips' });
+  for (let i = 0; i < max; i++) {
+    let st = 'empty';
+    if (i < c.e)             st = 'extra';
+    else if (i < c.e + c.b)  st = 'banished';
+    pips.appendChild(makeEl('span', { cls: 'pip ' + st }));
+  }
+  chip.appendChild(pips);
+  return chip;
 }
 
 function renderArsenal() {
@@ -1069,22 +1414,8 @@ function renderArsenal() {
   const fuStrip  = $('#fusionChips');
   xyzStrip.replaceChildren();
   fuStrip.replaceChildren();
-  for (const r of RANK_RANGE) {
-    const cls = chipStateClass('xyz', r);
-    xyzStrip.appendChild(makeEl('button', {
-      cls: 'chip xyz' + (cls ? ' ' + cls : ''),
-      attrs: { 'data-pool': 'xyz', 'data-val': r, type: 'button', title: chipTitle('xyz', r) },
-      text: 'R' + r,
-    }));
-  }
-  for (const l of LEVEL_RANGE) {
-    const cls = chipStateClass('fusion', l);
-    fuStrip.appendChild(makeEl('button', {
-      cls: 'chip fusion' + (cls ? ' ' + cls : ''),
-      attrs: { 'data-pool': 'fusion', 'data-val': l, type: 'button', title: chipTitle('fusion', l) },
-      text: 'L' + l,
-    }));
-  }
+  for (const r of RANK_RANGE)  xyzStrip.appendChild(buildChip('xyz',    r, XYZ_MAX));
+  for (const l of LEVEL_RANGE) fuStrip.appendChild(buildChip('fusion', l, FUSION_MAX));
 }
 
 function renderSolutions() {
@@ -1100,63 +1431,79 @@ function renderSolutions() {
     grid.style.display  = 'none';
     noSols.style.display = 'block';
     noSols.querySelector('.glyph').textContent = '⚜';
-    msgEl.textContent = 'Set a field state above to begin.';
-    hintEl.textContent = 'The cannons sleep until you describe the battlefield.';
+    msgEl.textContent  = t('no_sols_idle');
+    hintEl.textContent = t('no_sols_idle_hint');
     countEl.textContent = '';
     return;
   }
 
-  const sols = findSolutions(total, ammoXyz(), ammoFusion());
+  const sols = findSolutions(total, xyzExtraSet(), fusionExtraSet(), xyzBanishedSet());
   if (sols.length === 0) {
     grid.style.display  = 'none';
     noSols.style.display = 'block';
     noSols.querySelector('.glyph').textContent = '⚷';
-    msgEl.textContent = `No (X, Y) pair in your arsenal satisfies 2X + Y = ${total}.`;
-    hintEl.textContent = 'Adjust the field state via the What-If panel below, or expand your ammo pool above.';
-    countEl.textContent = `· 0 solutions for T=${total}`;
+    msgEl.textContent  = t('no_sols_match', total);
+    hintEl.textContent = t('no_sols_match_hint');
+    countEl.textContent = t('sol_count_n', 0, total);
     return;
   }
 
   noSols.style.display = 'none';
   grid.style.display   = 'grid';
-  countEl.textContent = `· ${sols.length} solution${sols.length > 1 ? 's' : ''} for T=${total}`;
+  countEl.textContent = t('sol_count_n', sols.length, total);
 
   sols.forEach((sol, i) => {
     const card = makeEl('div', { cls: 'solution-card' });
     card.style.animationDelay = `${i * 0.05}s`;
 
     const head = makeEl('div', { cls: 'sol-head' });
-    head.appendChild(makeEl('span', { text: '✦ Firing Solution' }));
+    head.appendChild(makeEl('span', { text: t('sol_head') }));
     head.appendChild(makeEl('span', { cls: 'num', text: '#' + String(i + 1).padStart(2, '0') }));
     card.appendChild(head);
 
     const ammo = makeEl('div', { cls: 'sol-ammo' });
     const xyzCard = makeEl('div', { cls: 'ammo-card xyz' });
-    xyzCard.appendChild(makeEl('div', { cls: 'ammo-type', text: 'Xyz · X' }));
+    xyzCard.appendChild(makeEl('div', { cls: 'ammo-type', text: t('ammo_xyz') }));
     xyzCard.appendChild(makeEl('div', { cls: 'ammo-val', text: 'R' + sol.X }));
-    xyzCard.appendChild(makeEl('div', { cls: 'ammo-tag', text: 'BANISH' }));
+    xyzCard.appendChild(makeEl('div', { cls: 'ammo-tag', text: t('ammo_tag') }));
     ammo.appendChild(xyzCard);
 
     ammo.appendChild(makeEl('div', { cls: 'fire-icon', text: '⋙' }));
 
     const fuCard = makeEl('div', { cls: 'ammo-card fusion' });
-    fuCard.appendChild(makeEl('div', { cls: 'ammo-type', text: 'Fusion · Y' }));
+    fuCard.appendChild(makeEl('div', { cls: 'ammo-type', text: t('ammo_fusion') }));
     fuCard.appendChild(makeEl('div', { cls: 'ammo-val', text: 'L' + sol.Y }));
-    fuCard.appendChild(makeEl('div', { cls: 'ammo-tag', text: 'BANISH' }));
+    fuCard.appendChild(makeEl('div', { cls: 'ammo-tag', text: t('ammo_tag') }));
     ammo.appendChild(fuCard);
 
     card.appendChild(ammo);
 
     const tgt = makeEl('div', { cls: 'sol-target' });
-    tgt.appendChild(makeEl('div', { cls: 'target-label', text: 'Destroy' }));
-    tgt.appendChild(makeEl('div', { cls: 'target-val', text: 'R/L ' + sol.target }));
-    tgt.appendChild(makeEl('div', { cls: 'target-tag', text: 'one monster of Rank or Level ' + sol.target }));
+    tgt.appendChild(makeEl('div', { cls: 'target-label', text: t('target_label') }));
+    tgt.appendChild(makeEl('div', { cls: 'target-val', text: 'R/L ' + sol.primaryTarget }));
+    tgt.appendChild(makeEl('div', { cls: 'target-tag', text: t('target_tag', sol.primaryTarget) }));
     card.appendChild(tgt);
+
+    const subs = sol.targets.filter(v => v !== sol.primaryTarget);
+    if (subs.length) {
+      const subsRow = makeEl('div', { cls: 'sol-subs' });
+      subsRow.appendChild(makeEl('div', { cls: 'subs-label', text: t('subs_label') }));
+      const list = makeEl('div', { cls: 'subs-list' });
+      for (const tv of subs) {
+        const C = tv - sol.Y;
+        const pill = makeEl('div', { cls: 'sub-pill', attrs: { title: t('sub_title', C, sol.Y, tv) } });
+        pill.appendChild(makeEl('span', { cls: 'sub-val', text: 'R/L ' + tv }));
+        pill.appendChild(makeEl('span', { cls: 'sub-formula', text: `R${C}+L${sol.Y}` }));
+        list.appendChild(pill);
+      }
+      subsRow.appendChild(list);
+      card.appendChild(subsRow);
+    }
 
     const math = makeEl('div', { cls: 'sol-math' });
     math.appendChild(document.createTextNode('2(' + sol.X + ') + ' + sol.Y + ' = '));
     math.appendChild(makeEl('span', { cls: 'ok', text: total }));
-    math.appendChild(document.createTextNode(' · X + Y = ' + sol.target));
+    math.appendChild(document.createTextNode(' · X + Y = ' + sol.primaryTarget));
     card.appendChild(math);
 
     grid.appendChild(card);
@@ -1169,18 +1516,26 @@ function renderAdjacent() {
   grid.replaceChildren();
   for (const d of [-3, -2, -1, 0, 1, 2, 3]) {
     const t = total + d;
-    const cell = makeEl('div', { cls: 'adj-cell' });
+    const cell = makeEl('div', {
+      cls: 'adj-cell',
+      attrs: { 'data-delta': d, 'data-target-t': t },
+    });
     if (d === 0) cell.classList.add('current');
     const count = (t >= 1) ? countSolutions(t) : 0;
     if (t < 1) cell.classList.add('cold');
     else if (count > 0) cell.classList.add('hot');
     else cell.classList.add('zero');
 
-    const deltaLabel = d === 0 ? 'NOW' : (d > 0 ? '+' + d : String(d));
+    if (d !== 0 && t >= 1) {
+      cell.title = `Click to jump total to ${t} (adjusts Field by ${d > 0 ? '+' + d : d})`;
+    }
+
+    const deltaLabel = d === 0 ? (i18n[state.lang || 'en'].adj_now || 'NOW') : (d > 0 ? '+' + d : String(d));
     cell.appendChild(makeEl('div', { cls: 'adj-delta', text: deltaLabel }));
     cell.appendChild(makeEl('div', { cls: 'adj-t', text: t < 1 ? '—' : String(t) }));
+    const shots = i18n[state.lang || 'en'].shots_n;
     cell.appendChild(makeEl('div', { cls: 'adj-count',
-      text: t < 1 ? '—' : (count + (count === 1 ? ' shot' : ' shots'))
+      text: t < 1 ? '—' : shots(count)
     }));
     grid.appendChild(cell);
   }
@@ -1235,7 +1590,27 @@ $$('.quick-btn').forEach(btn => {
   });
 });
 
+// Click an adjacent-total cell to jump the total to that value (adjusts Field
+// by the cell's delta). Adjusts Field rather than hands since Field changes
+// most during normal play (summons, removals).
+$('#adjacent').addEventListener('click', e => {
+  const cell = e.target.closest('.adj-cell');
+  if (!cell || cell.classList.contains('current') || cell.classList.contains('cold')) return;
+  const d = +cell.dataset.delta;
+  setCount('field', state.field + d);
+});
+
+// Language toggle wiring
+$$('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.lang = btn.dataset.lang;
+    applyI18n();
+    render();
+  });
+});
+
 loadState();
+applyI18n();
 renderArsenal();
 render();
 </script>
