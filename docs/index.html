@@ -850,23 +850,29 @@ section.panel h2 .meta {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 8px 3px;
-  background: linear-gradient(180deg, rgba(106, 72, 220, 0.20), rgba(20, 8, 28, 0.6));
+  gap: 2px;
+  padding: 6px 10px 5px;
+  background: linear-gradient(180deg, rgba(128, 64, 255, 0.20), rgba(20, 8, 28, 0.6));
   border: 1px solid var(--cannon);
   border-left: 2px solid var(--cannon-bright);
   border-radius: 1px;
-  cursor: default;
+  cursor: pointer;
   transition: all 0.18s ease;
+  font-family: inherit;
+  color: inherit;
 }
 .sub-pill:hover {
-  background: linear-gradient(180deg, rgba(106, 72, 220, 0.30), rgba(20, 8, 28, 0.7));
-  box-shadow: 0 0 6px var(--cannon-glow);
+  background: linear-gradient(180deg, rgba(128, 64, 255, 0.35), rgba(60, 24, 120, 0.50));
+  border-color: var(--cannon-bright);
+  box-shadow: 0 0 12px var(--cannon-glow), inset 0 0 8px rgba(176, 112, 255, 0.20);
+  transform: translateY(-1px);
 }
+.sub-pill:active { transform: scale(0.97); }
 .sub-pill .sub-val {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--ivory);
+  color: #ffffff;
   letter-spacing: 0.04em;
   text-shadow: 0 0 6px var(--cannon-glow);
   line-height: 1.1;
@@ -876,7 +882,24 @@ section.panel h2 .meta {
   font-size: 8px;
   letter-spacing: 0.06em;
   color: var(--cannon-bright);
+}
+.sub-pill .sub-fire {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 7px;
+  letter-spacing: 0.22em;
+  color: var(--cannon-bright);
+  text-transform: uppercase;
   margin-top: 1px;
+  opacity: 0.85;
+  text-shadow: 0 0 4px var(--cannon-glow);
+}
+.sub-pill:hover .sub-fire { opacity: 1; color: #ffffff; }
+
+/* Substitution-fire flash variant — purple cast instead of cyan */
+.fire-flash.sub {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(128, 64, 255, 0.35), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.18), transparent 70%);
 }
 
 .no-solutions {
@@ -1250,7 +1273,8 @@ const i18n = {
     target_tag: (n) => `all opponent monsters of Rank/Level ${n}`,
     subs_label: '+ via banished Xyz · C + Y',
     sub_title: (C, Y, t) => `Banished R${C} + L${Y} = ${t}`,
-    fire_btn: '⫸ FIRE CANNON',
+    fire_btn: '⫸ FIRE · BANISH 1 X',
+    fire_sub: 'FIRE · RECOVER C',
     seal_greeting: 'CANNON STATION · LABRYNTH MANOR',
     seal_version: 'v5 · client-side · zero telemetry',
   },
@@ -1303,7 +1327,8 @@ const i18n = {
     target_tag: (n) => `对手场上所有阶级/等级为 ${n} 的怪兽`,
     subs_label: '+ 通过除外区 Xyz · C + Y',
     sub_title: (C, Y, t) => `除外区 R${C} + L${Y} = ${t}`,
-    fire_btn: '⫸ 开炮',
+    fire_btn: '⫸ 开炮 · 除外 1 X',
+    fire_sub: '开炮 · 取回 C',
     seal_greeting: '加农炮工作站 · 拉比林斯庄园',
     seal_version: 'v5 · 浏览器本地运行 · 零遥测',
   },
@@ -1412,11 +1437,15 @@ function saveState() {
   } catch {}
 }
 
-/* Derived ammo pools: a rank/level is "available as fresh ammo" if its
-   Extra Deck count > 0, and "available as substitution" if its banished
-   count > 0. With pairs, the same rank can satisfy BOTH at once. */
-function xyzExtraSet()       { return new Set(Object.keys(state.xyzCount).filter(r => state.xyzCount[r].e > 0).map(Number)); }
-function xyzBanishedSet()    { return new Set(Object.keys(state.xyzCount).filter(r => state.xyzCount[r].b > 0).map(Number)); }
+/* Derived ammo pools.
+   Per SEC's effect, the 2X+Y equation literally banishes 2 copies of an
+   Xyz of rank X — so fresh-X eligibility requires a COMPLETE PAIR (≥2
+   copies in Extra Deck). Banished copies and lone singles cannot be used
+   as fresh X. (They CAN still substitute as C in the target X+Y formula.)
+   Fresh Y needs only 1 copy in Extra Deck since Fusion is consumed as a
+   single. */
+function xyzExtraSet()       { return new Set(Object.keys(state.xyzCount).filter(r => state.xyzCount[r].e >= 2).map(Number)); }
+function xyzBanishedSet()    { return new Set(Object.keys(state.xyzCount).filter(r => state.xyzCount[r].b >  0).map(Number)); }
 function fusionExtraSet()    { return new Set(Object.keys(state.fusionCount).filter(l => state.fusionCount[l].e > 0).map(Number)); }
 function fusionBanishedSet() { return new Set(Object.keys(state.fusionCount).filter(l => state.fusionCount[l].b > 0).map(Number)); }
 
@@ -1618,9 +1647,18 @@ function renderSolutions() {
       const list = makeEl('div', { cls: 'subs-list' });
       for (const tv of subs) {
         const C = tv - sol.Y;
-        const pill = makeEl('div', { cls: 'sub-pill', attrs: { title: t('sub_title', C, sol.Y, tv) } });
+        const pill = makeEl('button', {
+          cls: 'sub-pill',
+          attrs: {
+            title: t('sub_title', C, sol.Y, tv),
+            type: 'button',
+            'data-fire-c': C,
+          },
+        });
         pill.appendChild(makeEl('span', { cls: 'sub-val', text: 'R/L ' + tv }));
         pill.appendChild(makeEl('span', { cls: 'sub-formula', text: `R${C}+L${sol.Y}` }));
+        pill.appendChild(makeEl('span', { cls: 'sub-fire', text: t('fire_sub') }));
+        pill.addEventListener('click', () => fireSolution(sol.X, sol.Y, C));
         list.appendChild(pill);
       }
       subsRow.appendChild(list);
@@ -1732,21 +1770,30 @@ $('#adjacent').addEventListener('click', e => {
   setCount('field', state.field + d);
 });
 
-/* FIRE — execute a solution. Moves one X copy and one Y copy from Extra Deck
-   to Banished. After firing a paired Xyz like R4, that rank now has 1 fresh
-   copy left in Extra Deck AND 1 in Banished — so it's still valid fresh ammo
-   for the next shot AND valid as a C+Y substitution. Field state is not
-   touched (user adjusts that separately to reflect their game). */
-function fireSolution(X, Y) {
-  const x = state.xyzCount[X];
-  const y = state.fusionCount[Y];
-  if (x && x.e > 0) { x.e -= 1; x.b += 1; }
-  if (y && y.e > 0) { y.e -= 1; y.b += 1; }
+/* FIRE — execute a solution. The two targeting modes have different net
+   effects on the arsenal:
+     - Default X+Y target: 1 X moves Extra → Banished (lose 1 X copy).
+     - Substitution C+Y target: 1 C moves Banished → Extra (recover 1 X).
+   Both modes require the X pair to be in Extra Deck at cost-time (the pair
+   is banished for cost then fully returned; only the net effect differs).
+   Y always returns to Extra Deck after the effect resolves — net 0. Field
+   state is never auto-adjusted (the destruction can hit multiple monsters
+   so the user reflects that manually). */
+function fireSolution(X, Y, substitutionC) {
+  if (substitutionC == null) {
+    // Default fire — banish 1 X from extra (pair → half-pair).
+    const x = state.xyzCount[X];
+    if (x && x.e >= 2) { x.e -= 1; x.b += 1; }
+  } else {
+    // Substitution fire — pair returns intact, banished C migrates to extra.
+    const c = state.xyzCount[substitutionC];
+    if (c && c.b > 0) { c.b -= 1; c.e += 1; }
+  }
   renderArsenal();
   render();
   // Brief firing flash on the document for feedback
   const flash = document.createElement('div');
-  flash.className = 'fire-flash';
+  flash.className = 'fire-flash' + (substitutionC != null ? ' sub' : '');
   document.body.appendChild(flash);
   setTimeout(() => flash.remove(), 700);
 }
