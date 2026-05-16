@@ -1770,25 +1770,38 @@ $('#adjacent').addEventListener('click', e => {
   setCount('field', state.field + d);
 });
 
-/* FIRE — execute a solution. The two targeting modes have different net
-   effects on the arsenal:
-     - Default X+Y target: 1 X moves Extra → Banished (lose 1 X copy).
-     - Substitution C+Y target: 1 C moves Banished → Extra (recover 1 X).
-   Both modes require the X pair to be in Extra Deck at cost-time (the pair
-   is banished for cost then fully returned; only the net effect differs).
-   Y always returns to Extra Deck after the effect resolves — net 0. Field
-   state is never auto-adjusted (the destruction can hit multiple monsters
-   so the user reflects that manually). */
+/* FIRE — execute the SEC two-step effect.
+   STEP 1 (cost):   banish 2 X (the Extra Deck pair) + 1 Y (the Fusion).
+   STEP 2 (return): return 1 Xyz + 1 Fusion from the banished zone to
+                    Extra Deck, choosing cards whose Ranks/Levels sum to
+                    the target monster's Rank/Level on the field.
+
+   Two cases for the Xyz return (the Fusion always returns the Y you just
+   banished, so Y is net 0 every time):
+     A. Return X (the rank you just banished) → 1 of the pair returns to
+        Extra; 1 stays banished. Net Xyz change: −1 extra / +1 banished.
+     B. Return C (a different Xyz rank, previously banished) → the entire
+        pair stays banished AND the chosen C migrates to Extra.
+        Net Xyz change for X: −2 extra / +2 banished.
+        Net Xyz change for C: +1 extra / −1 banished.
+
+   Field state is never auto-adjusted — the destruction can hit multiple
+   monsters at once, so the user updates Field manually. */
 function fireSolution(X, Y, substitutionC) {
+  const x = state.xyzCount[X];
+  if (!x || x.e < 2) return; // pair required to fire — guard against stale UI
   if (substitutionC == null) {
-    // Default fire — banish 1 X from extra (pair → half-pair).
-    const x = state.xyzCount[X];
-    if (x && x.e >= 2) { x.e -= 1; x.b += 1; }
+    // Case A — default fire, return X+Y. One X copy remains banished.
+    x.e -= 1;
+    x.b += 1;
   } else {
-    // Substitution fire — pair returns intact, banished C migrates to extra.
+    // Case B — substitution fire, return C+Y. The X pair fully banishes.
+    x.e -= 2;
+    x.b += 2;
     const c = state.xyzCount[substitutionC];
     if (c && c.b > 0) { c.b -= 1; c.e += 1; }
   }
+  // Y always returns to Extra after the effect — net 0 for Y.
   renderArsenal();
   render();
   // Brief firing flash on the document for feedback
