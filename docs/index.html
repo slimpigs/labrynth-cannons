@@ -844,6 +844,82 @@ body.firing-cold .ready-pip {
   100% { transform: scale(1); }
 }
 
+/* Robustness row — appears under the TARGETS strip when a pill is active.
+   Each delta cell is colored cyan (hits) or magenta (misses), and clicking
+   one jumps the Total to that delta value. */
+.active-target-row {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 9px 12px;
+  background: rgba(255, 32, 128, 0.04);
+  border: 1px solid var(--magenta);
+  border-left: 3px solid var(--magenta-bright);
+  border-radius: 1px;
+  flex-wrap: wrap;
+  box-shadow: 0 0 10px rgba(255, 32, 128, 0.10);
+}
+.active-target-row .active-label {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  color: var(--magenta-bright);
+  text-transform: uppercase;
+  margin-right: 8px;
+  text-shadow: 0 0 6px var(--magenta-glow);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.active-target-row .active-label::before {
+  content: '◢';
+  color: var(--magenta);
+  text-shadow: 0 0 4px var(--magenta-glow);
+}
+.delta-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--ash-deep);
+  border-radius: 1px;
+  background: rgba(20, 30, 60, 0.55);
+  color: var(--silver);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.delta-cell:hover { transform: translateY(-1px); }
+.delta-cell.hit {
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+  background: rgba(0, 212, 255, 0.10);
+  box-shadow: 0 0 6px var(--cyan-glow);
+}
+.delta-cell.hit:hover { box-shadow: 0 0 12px var(--cyan-glow); background: rgba(0, 212, 255, 0.18); }
+.delta-cell.miss {
+  border-color: var(--magenta);
+  color: var(--magenta-bright);
+  background: rgba(255, 32, 128, 0.06);
+}
+.delta-cell.miss:hover { background: rgba(255, 32, 128, 0.14); }
+.delta-cell.invalid {
+  opacity: 0.30;
+  pointer-events: none;
+  border-style: dashed;
+}
+.delta-cell .delta-mark { font-weight: 700; }
+.delta-cell .delta-num {
+  font-size: 9px;
+  opacity: 0.9;
+  letter-spacing: 0.08em;
+}
+
 /* Highlighted solution cards (matching a clicked target pill) */
 .solution-card.highlighted {
   border-color: var(--magenta-bright);
@@ -1647,6 +1723,7 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
         <span class="ready-pip" id="readyPip"></span>
       </h2>
       <div class="targets-summary" id="targetsSummary" style="display:none;"></div>
+      <div class="active-target-row" id="robustnessRow" style="display:none;"></div>
       <div class="solutions-scroll">
         <div class="solutions-grid" id="solutions"></div>
         <div class="no-solutions" id="noSols" style="display:none;">
@@ -1730,7 +1807,9 @@ const i18n = {
     fire_btn: '⫸ FIRE · BANISH 1 X',
     fire_sub: 'FIRE · RECOVER C',
     targets_label: 'Targets Under Fire',
-    target_pill_title: (n, k) => `Rank/Level ${n} — ${k} ${k === 1 ? 'way' : 'ways'} to reach. Click to highlight.`,
+    target_pill_title: (n, k) => `Rank/Level ${n} — ${k} ${k === 1 ? 'way' : 'ways'} to reach. Click to highlight + see robustness.`,
+    robustness_label: (n) => `R/L ${n} · robustness at T±3`,
+    delta_cell_title: (tv, newT, hit) => hit ? `T=${newT} → R/L ${tv} still hittable · click to jump` : `T=${newT} → R/L ${tv} not hittable`,
     seal_greeting: 'CANNON STATION · LABRYNTH MANOR',
     seal_version: 'v5 · client-side · zero telemetry',
   },
@@ -1787,7 +1866,9 @@ const i18n = {
     fire_btn: '⫸ 开炮 · 除外 1 X',
     fire_sub: '开炮 · 取回 C',
     targets_label: '当前可摧毁的目标',
-    target_pill_title: (n, k) => `阶级/等级 ${n} — 共 ${k} 种打法。点击高亮对应方案。`,
+    target_pill_title: (n, k) => `阶级/等级 ${n} — 共 ${k} 种打法。点击高亮方案 + 查看 T±3 可达性。`,
+    robustness_label: (n) => `R/L ${n} · T±3 浮动可达性`,
+    delta_cell_title: (tv, newT, hit) => hit ? `T=${newT} 时 R/L ${tv} 仍可击毁 · 点击跳转` : `T=${newT} 时 R/L ${tv} 无法击毁`,
     seal_greeting: '加农炮工作站 · 拉比林斯庄园',
     seal_version: 'v5 · 浏览器本地运行 · 零遥测',
   },
@@ -2041,6 +2122,12 @@ function renderSolutions() {
     summaryEl.replaceChildren();
     summaryEl.style.display = 'none';
   }
+  // Robustness row also cleared up front; re-rendered below if still valid.
+  const robustnessEl = $('#robustnessRow');
+  if (robustnessEl) {
+    robustnessEl.replaceChildren();
+    robustnessEl.style.display = 'none';
+  }
 
   if (total === 0) {
     grid.style.display  = 'none';
@@ -2096,6 +2183,13 @@ function renderSolutions() {
     summaryEl.appendChild(pillStrip);
   } else {
     summaryEl.style.display = 'none';
+  }
+
+  // If a previously-selected target is still reachable, keep it active and
+  // re-render the robustness row (which depends on the new total). Otherwise
+  // clear the active target.
+  if (activeTarget != null && !targetMap.has(activeTarget)) {
+    activeTarget = null;
   }
 
   sols.forEach((sol, i) => {
@@ -2171,6 +2265,13 @@ function renderSolutions() {
 
     grid.appendChild(card);
   });
+
+  // Re-apply active target highlight after cards are built. This makes
+  // the highlight + robustness row survive Total changes whenever the
+  // target is still reachable.
+  if (activeTarget != null) {
+    highlightTarget(activeTarget, null);
+  }
 }
 
 function renderAdjacent() {
@@ -2204,17 +2305,70 @@ function renderAdjacent() {
   }
 }
 
-/* Highlight every solution card that lists `tv` among its targets, and
-   scroll the first match into view. Marks the clicked pill as active. */
+/* Tracks the currently-selected target value (set via clicking a pill).
+   Persists across re-renders so the highlight survives a Total step,
+   as long as the same target is still reachable. */
+let activeTarget = null;
+
+/* True iff target Rank/Level `tv` is reachable at the given `total`
+   with the current arsenal (default OR substitution path). */
+function isTargetReachable(total, tv) {
+  if (total < 1) return false;
+  const sols = findSolutions(total, xyzExtraSet(), fusionExtraSet(), xyzBanishedSet());
+  return sols.some(sol => sol.targets.includes(tv));
+}
+
+/* Robustness row — shows whether target `tv` survives T±3 shifts.
+   Each cell is a jump button colored cyan (hits) or magenta (misses). */
+function renderRobustness(tv) {
+  const row = $('#robustnessRow');
+  if (!row) return;
+  row.replaceChildren();
+  row.appendChild(makeEl('span', { cls: 'active-label', text: t('robustness_label', tv) }));
+  for (const d of [-3, -2, -1, 1, 2, 3]) {
+    const newT = state.total + d;
+    const valid = newT >= 1;
+    const hit = valid && isTargetReachable(newT, tv);
+    const cell = makeEl('button', {
+      cls: 'delta-cell ' + (!valid ? 'invalid' : (hit ? 'hit' : 'miss')),
+      attrs: { type: 'button', 'data-delta': d, title: t('delta_cell_title', tv, newT, hit) },
+    });
+    cell.appendChild(makeEl('span', { cls: 'delta-mark', text: !valid ? '—' : (hit ? '✓' : '✗') }));
+    cell.appendChild(makeEl('span', { cls: 'delta-num', text: (d > 0 ? '+' : '') + d }));
+    cell.addEventListener('click', () => { if (valid) setTotal(newT); });
+    row.appendChild(cell);
+  }
+  row.style.display = 'flex';
+}
+
+/* Highlight every solution card that lists `tv` among its targets, mark
+   the clicked pill as active, render the robustness row, and scroll the
+   first match into view. */
 function highlightTarget(tv, pillEl) {
+  activeTarget = tv;
   $$('.target-pill').forEach(p => p.classList.remove('active'));
   if (pillEl) pillEl.classList.add('active');
+  else {
+    const matchPill = $(`.target-pill[data-target-val="${tv}"]`);
+    if (matchPill) matchPill.classList.add('active');
+  }
   $$('.solution-card').forEach(c => {
     const targets = (c.dataset.targets || '').split(/\s+/).map(Number);
     c.classList.toggle('highlighted', targets.includes(tv));
   });
-  const first = $('.solution-card.highlighted');
-  if (first) first.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  renderRobustness(tv);
+  if (pillEl) {
+    const first = $('.solution-card.highlighted');
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+/* Clear the robustness row + activeTarget — used when no target is
+   selected or the previously-active target is no longer reachable. */
+function clearActiveTarget() {
+  activeTarget = null;
+  const row = $('#robustnessRow');
+  if (row) { row.replaceChildren(); row.style.display = 'none'; }
 }
 
 function render() {
