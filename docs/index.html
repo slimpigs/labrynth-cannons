@@ -2335,7 +2335,14 @@ function renderRobustness(tv) {
     });
     cell.appendChild(makeEl('span', { cls: 'delta-mark', text: !valid ? '—' : (hit ? '✓' : '✗') }));
     cell.appendChild(makeEl('span', { cls: 'delta-num', text: (d > 0 ? '+' : '') + d }));
-    cell.addEventListener('click', () => { if (valid) setTotal(newT); });
+    cell.addEventListener('click', () => {
+      if (!valid) return;
+      setTotal(newT);
+      // After the re-render, scroll the matching solution card into view —
+      // the user just told us they care about THIS target at THIS new total.
+      const first = $('.solution-card.highlighted');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
     row.appendChild(cell);
   }
   row.style.display = 'flex';
