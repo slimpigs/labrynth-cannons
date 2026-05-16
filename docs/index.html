@@ -473,23 +473,20 @@ section.panel h2 .meta {
 .bg-radar .radar-cross.v { left: 50%; top: 2%; bottom: 2%; width: 1px; margin-left: -0.5px; }
 .bg-radar .radar-cross.h { top: 50%; left: 2%; right: 2%; height: 1px; margin-top: -0.5px; }
 
-/* Rotating sweep cone — additive blend so it lights up the rings as it passes */
+/* Rotating sweep cone — GPU-friendly: no blend modes, no blur.
+   Pure rotation transform animates on the compositor with no layout/paint. */
 .bg-radar .radar-sweep {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: conic-gradient(
     from 0deg at 50% 50%,
-    transparent 0deg,
-    transparent 250deg,
-    rgba(0, 212, 255, 0.04) 290deg,
-    rgba(0, 212, 255, 0.10) 330deg,
+    transparent 320deg,
     rgba(0, 212, 255, 0.22) 354deg,
-    rgba(0, 212, 255, 0.45) 360deg
+    rgba(0, 212, 255, 0.40) 360deg
   );
-  mix-blend-mode: screen;
   animation: radarSweep 5s linear infinite;
-  filter: blur(1px);
+  will-change: transform;
 }
 @keyframes radarSweep {
   from { transform: rotate(0deg); }
@@ -1948,7 +1945,14 @@ function renderSolutions() {
   const countEl = $('#solCount');
   const msgEl   = $('#noSolMsg');
   const hintEl  = $('#noSolHint');
+  const summaryEl = $('#targetsSummary');
   grid.replaceChildren();
+  // ALWAYS clear the targets summary up front so it never carries stale
+  // pills from a previous render with different state.
+  if (summaryEl) {
+    summaryEl.replaceChildren();
+    summaryEl.style.display = 'none';
+  }
 
   if (total === 0) {
     grid.style.display  = 'none';
@@ -1983,8 +1987,7 @@ function renderSolutions() {
       targetMap.set(tv, (targetMap.get(tv) || 0) + 1);
     }
   }
-  const summaryEl = $('#targetsSummary');
-  summaryEl.replaceChildren();
+  // summaryEl already cleared at top of function — just populate if needed
   if (targetMap.size > 0) {
     summaryEl.style.display = 'block';
     summaryEl.appendChild(makeEl('div', { cls: 'summary-label', text: t('targets_label') }));
