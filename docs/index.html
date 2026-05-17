@@ -1235,6 +1235,9 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
   50%      { transform: scale(1.18) translateX(2px); opacity: 1;    text-shadow: 0 0 14px var(--magenta-glow), 0 0 28px var(--magenta-glow), 0 0 40px var(--magenta-glow); }
 }
 
+/* Legacy .sol-target / .sub-pill styles are no longer rendered — replaced by
+   the unified .sol-options + .shot-pill row defined below. Keeping the old
+   blocks dormant lets stale browser caches degrade gracefully. */
 .sol-target {
   background: linear-gradient(180deg, rgba(255, 32, 128, 0.10), rgba(60, 8, 32, 0.30));
   border: 1px solid var(--magenta);
@@ -1244,6 +1247,108 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
   position: relative;
   box-shadow: 0 0 10px var(--magenta-glow), inset 0 0 12px rgba(255, 32, 128, 0.10);
 }
+
+/* ============================================================
+   UNIFIED SHOT-PILL ROW — all firing options at the same visual
+   weight, distinguished only by color. Magenta = primary X+Y,
+   cannon-purple = C+Y substitution. Each pill is a fire button.
+   ============================================================ */
+.options-label {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--magenta-bright);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  margin-top: 2px;
+  text-shadow: 0 0 6px var(--magenta-glow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.options-label::before {
+  content: '◢';
+  color: var(--magenta);
+  text-shadow: 0 0 4px var(--magenta-glow);
+}
+
+.sol-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.shot-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 6px 11px 5px;
+  border: 1px solid var(--ash-deep);
+  border-left-width: 2px;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.18s ease, box-shadow 0.18s ease;
+  font-family: inherit;
+  min-width: 84px;
+}
+.shot-pill:hover { transform: translateY(-1px); }
+.shot-pill:active { transform: scale(0.96); }
+
+.shot-pill.primary {
+  background: linear-gradient(180deg, rgba(255, 32, 128, 0.22), rgba(60, 8, 32, 0.55));
+  border-color: var(--magenta);
+  border-left-color: var(--magenta-bright);
+  box-shadow: 0 0 8px var(--magenta-glow), inset 0 1px 0 rgba(255, 96, 168, 0.18);
+}
+.shot-pill.primary:hover {
+  background: linear-gradient(180deg, rgba(255, 32, 128, 0.40), rgba(120, 14, 56, 0.60));
+  box-shadow: 0 0 16px var(--magenta-glow), 0 0 26px rgba(255, 32, 128, 0.32);
+}
+.shot-pill.sub {
+  background: linear-gradient(180deg, rgba(128, 64, 255, 0.22), rgba(20, 8, 28, 0.60));
+  border-color: var(--cannon);
+  border-left-color: var(--cannon-bright);
+  box-shadow: 0 0 6px var(--cannon-glow), inset 0 1px 0 rgba(176, 112, 255, 0.18);
+}
+.shot-pill.sub:hover {
+  background: linear-gradient(180deg, rgba(128, 64, 255, 0.40), rgba(60, 24, 120, 0.60));
+  box-shadow: 0 0 14px var(--cannon-glow), 0 0 22px rgba(128, 64, 255, 0.30);
+}
+
+.shot-pill .shot-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+.shot-pill.primary .shot-val { text-shadow: 0 0 6px var(--magenta-glow); }
+.shot-pill.sub     .shot-val { text-shadow: 0 0 6px var(--cannon-glow); }
+
+.shot-pill .shot-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+.shot-pill.primary .shot-formula { color: var(--magenta-bright); }
+.shot-pill.sub     .shot-formula { color: var(--cannon-bright); }
+
+.shot-pill .shot-fire {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+.shot-pill.primary .shot-fire { color: var(--rose); text-shadow: 0 0 4px var(--magenta-glow); }
+.shot-pill.sub     .shot-fire { color: var(--cannon-bright); text-shadow: 0 0 4px var(--cannon-glow); }
+.shot-pill:hover .shot-fire { opacity: 1; }
 .sol-target .target-label {
   font-family: 'Orbitron', sans-serif;
   font-weight: 500;
@@ -1838,6 +1943,8 @@ const i18n = {
     sub_title: (C, Y, t) => `Banished R${C} + L${Y} = ${t}`,
     fire_btn: '⫸ FIRE · BANISH 1 X',
     fire_sub: 'FIRE · RECOVER C',
+    shot_default: 'DEFAULT',
+    shot_sub: 'C-SUB',
     targets_label: 'Targets Under Fire',
     target_pill_title: (n, k) => `Rank/Level ${n} — ${k} ${k === 1 ? 'way' : 'ways'} to reach. Click to highlight + see robustness.`,
     robustness_label: (n) => `R/L ${n} · robustness at T±3`,
@@ -1897,6 +2004,8 @@ const i18n = {
     sub_title: (C, Y, t) => `除外区 R${C} + L${Y} = ${t}`,
     fire_btn: '⫸ 开炮 · 除外 1 X',
     fire_sub: '开炮 · 取回 C',
+    shot_default: '默认',
+    shot_sub: 'C 代入',
     targets_label: '当前可摧毁的目标',
     target_pill_title: (n, k) => `阶级/等级 ${n} — 共 ${k} 种打法。点击高亮方案 + 查看 T±3 可达性。`,
     robustness_label: (n) => `R/L ${n} · T±3 浮动可达性`,
@@ -2253,36 +2362,38 @@ function renderSolutions() {
 
     card.appendChild(ammo);
 
-    const tgt = makeEl('div', { cls: 'sol-target' });
-    tgt.appendChild(makeEl('div', { cls: 'target-label', text: t('target_label') }));
-    tgt.appendChild(makeEl('div', { cls: 'target-val', text: 'R/L ' + sol.primaryTarget }));
-    tgt.appendChild(makeEl('div', { cls: 'target-tag', text: t('target_tag', sol.primaryTarget) }));
-    card.appendChild(tgt);
+    // Targets — primary X+Y and any C+Y substitutions as ONE row of equally-
+    // sized pills. Color does the work that size used to: magenta = primary,
+    // cannon-purple = substitution. Each pill is clickable to fire that variant.
+    const optionsLabel = makeEl('div', { cls: 'options-label', text: t('target_label') });
+    card.appendChild(optionsLabel);
+    const optionsRow = makeEl('div', { cls: 'sol-options' });
+
+    const primaryPill = makeEl('button', {
+      cls: 'shot-pill primary',
+      attrs: { type: 'button', title: t('target_tag', sol.primaryTarget) },
+    });
+    primaryPill.appendChild(makeEl('span', { cls: 'shot-val', text: 'R/L ' + sol.primaryTarget }));
+    primaryPill.appendChild(makeEl('span', { cls: 'shot-formula', text: `R${sol.X}+L${sol.Y}` }));
+    primaryPill.appendChild(makeEl('span', { cls: 'shot-fire', text: t('shot_default') }));
+    primaryPill.addEventListener('click', () => fireSolution(sol.X, sol.Y));
+    optionsRow.appendChild(primaryPill);
 
     const subs = sol.targets.filter(v => v !== sol.primaryTarget);
-    if (subs.length) {
-      const subsRow = makeEl('div', { cls: 'sol-subs' });
-      subsRow.appendChild(makeEl('div', { cls: 'subs-label', text: t('subs_label') }));
-      const list = makeEl('div', { cls: 'subs-list' });
-      for (const tv of subs) {
-        const C = tv - sol.Y;
-        const pill = makeEl('button', {
-          cls: 'sub-pill',
-          attrs: {
-            title: t('sub_title', C, sol.Y, tv),
-            type: 'button',
-            'data-fire-c': C,
-          },
-        });
-        pill.appendChild(makeEl('span', { cls: 'sub-val', text: 'R/L ' + tv }));
-        pill.appendChild(makeEl('span', { cls: 'sub-formula', text: `R${C}+L${sol.Y}` }));
-        pill.appendChild(makeEl('span', { cls: 'sub-fire', text: t('fire_sub') }));
-        pill.addEventListener('click', () => fireSolution(sol.X, sol.Y, C));
-        list.appendChild(pill);
-      }
-      subsRow.appendChild(list);
-      card.appendChild(subsRow);
+    for (const tv of subs) {
+      const C = tv - sol.Y;
+      const subPill = makeEl('button', {
+        cls: 'shot-pill sub',
+        attrs: { type: 'button', title: t('sub_title', C, sol.Y, tv), 'data-fire-c': C },
+      });
+      subPill.appendChild(makeEl('span', { cls: 'shot-val', text: 'R/L ' + tv }));
+      subPill.appendChild(makeEl('span', { cls: 'shot-formula', text: `R${C}+L${sol.Y}` }));
+      subPill.appendChild(makeEl('span', { cls: 'shot-fire', text: t('shot_sub') }));
+      subPill.addEventListener('click', () => fireSolution(sol.X, sol.Y, C));
+      optionsRow.appendChild(subPill);
     }
+
+    card.appendChild(optionsRow);
 
     const math = makeEl('div', { cls: 'sol-math' });
     math.appendChild(document.createTextNode('2(' + sol.X + ') + ' + sol.Y + ' = '));
