@@ -1574,6 +1574,38 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
 .adj-cell.current .adj-count { color: var(--cyan-bright); }
 .adj-cell.cold .adj-count, .adj-cell.zero .adj-count { color: var(--ash-deep); }
 
+/* R/L target mini-pips per adj cell — tiny magenta chips showing which
+   Rank/Level values can be destroyed at that adjacent T. */
+.adj-cell .adj-targets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 3px;
+}
+.adj-cell .adj-rl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--magenta-bright);
+  background: rgba(255, 32, 128, 0.14);
+  border: 1px solid var(--magenta);
+  padding: 1px 4px;
+  border-radius: 1px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 4px var(--magenta-glow);
+  line-height: 1.1;
+  min-width: 14px;
+  text-align: center;
+}
+.adj-cell.current .adj-rl {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+  text-shadow: 0 0 4px var(--cyan-glow);
+}
+.adj-cell.cold .adj-rl, .adj-cell.zero .adj-rl { opacity: 0.5; }
+
 .seal {
   margin-top: 36px;
   padding-top: 18px;
@@ -2274,6 +2306,16 @@ function renderSolutions() {
   }
 }
 
+/* Collect the unique Rank/Level values reachable at a given total —
+   includes both default X+Y targets and C+Y substitution targets. */
+function targetsForTotal(total) {
+  if (total < 1) return [];
+  const sols = findSolutions(total, xyzExtraSet(), fusionExtraSet(), xyzBanishedSet());
+  const out = new Set();
+  for (const sol of sols) for (const tv of sol.targets) out.add(tv);
+  return [...out].sort((a, b) => a - b);
+}
+
 function renderAdjacent() {
   const total = state.total;
   const grid = $('#adjacent');
@@ -2285,7 +2327,8 @@ function renderAdjacent() {
       attrs: { 'data-delta': d, 'data-target-t': t },
     });
     if (d === 0) cell.classList.add('current');
-    const count = (t >= 1) ? countSolutions(t) : 0;
+    const targets = (t >= 1) ? targetsForTotal(t) : [];
+    const count = targets.length;
     if (t < 1) cell.classList.add('cold');
     else if (count > 0) cell.classList.add('hot');
     else cell.classList.add('zero');
@@ -2301,6 +2344,15 @@ function renderAdjacent() {
     cell.appendChild(makeEl('div', { cls: 'adj-count',
       text: t < 1 ? '—' : shots(count)
     }));
+    // R/L target chips — show which Rank/Level values are reachable at this T.
+    // Crucial for planning: a glance reveals what monsters you could destroy.
+    if (count > 0) {
+      const rlRow = makeEl('div', { cls: 'adj-targets' });
+      for (const tv of targets) {
+        rlRow.appendChild(makeEl('span', { cls: 'adj-rl', text: String(tv) }));
+      }
+      cell.appendChild(rlRow);
+    }
     grid.appendChild(cell);
   }
 }
