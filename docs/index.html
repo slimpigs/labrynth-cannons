@@ -1283,18 +1283,33 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
-  padding: 6px 11px 5px;
+  gap: 2px;
+  padding: 8px 12px 7px;
   border: 1px solid var(--ash-deep);
-  border-left-width: 2px;
+  border-left-width: 3px;
   border-radius: 1px;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.15s ease, background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   font-family: inherit;
-  min-width: 84px;
+  min-width: 96px;
+  position: relative;
+  overflow: hidden;
 }
-.shot-pill:hover { transform: translateY(-1px); }
-.shot-pill:active { transform: scale(0.96); }
+.shot-pill::before {
+  /* shimmer sweep on hover — signals "this is an action, not info" */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.16) 50%, transparent 100%);
+  transform: translateX(-110%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+.shot-pill:hover {
+  transform: translateY(-2px);
+}
+.shot-pill:hover::before { transform: translateX(110%); }
+.shot-pill:active { transform: scale(0.95); }
 
 .shot-pill.primary {
   background: linear-gradient(180deg, rgba(255, 32, 128, 0.22), rgba(60, 8, 32, 0.55));
@@ -1339,16 +1354,44 @@ section.panel h2 { font-size: 12px; margin-bottom: 14px; padding-bottom: 8px; le
 
 .shot-pill .shot-fire {
   font-family: 'Orbitron', sans-serif;
-  font-size: 7px;
-  font-weight: 500;
-  letter-spacing: 0.24em;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.20em;
   text-transform: uppercase;
-  opacity: 0.85;
-  margin-top: 2px;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 1px;
+  border: 1px solid currentColor;
+  line-height: 1;
 }
-.shot-pill.primary .shot-fire { color: var(--rose); text-shadow: 0 0 4px var(--magenta-glow); }
-.shot-pill.sub     .shot-fire { color: var(--cannon-bright); text-shadow: 0 0 4px var(--cannon-glow); }
-.shot-pill:hover .shot-fire { opacity: 1; }
+.shot-pill.primary .shot-fire {
+  color: #ffffff;
+  background: rgba(255, 32, 128, 0.40);
+  border-color: var(--magenta-bright);
+  text-shadow: 0 0 6px var(--magenta-glow);
+  box-shadow: inset 0 0 4px rgba(255, 128, 168, 0.30);
+}
+.shot-pill.sub .shot-fire {
+  color: #ffffff;
+  background: rgba(128, 64, 255, 0.40);
+  border-color: var(--cannon-bright);
+  text-shadow: 0 0 6px var(--cannon-glow);
+  box-shadow: inset 0 0 4px rgba(176, 112, 255, 0.30);
+}
+.shot-pill:hover .shot-fire {
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.30), 0 0 8px currentColor;
+}
+
+/* When firing-ready, the shot-pill FIRE labels pulse — same animation
+   philosophy as the previous bottom-FIRE button, now distributed across
+   every pill so the affordance is unmissable. */
+body.firing-ready .shot-pill .shot-fire {
+  animation: shotFirePulse 1.6s ease-in-out infinite;
+}
+@keyframes shotFirePulse {
+  0%, 100% { box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.25); }
+  50%      { box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.45), 0 0 10px currentColor; }
+}
 .sol-target .target-label {
   font-family: 'Orbitron', sans-serif;
   font-weight: 500;
@@ -1943,8 +1986,8 @@ const i18n = {
     sub_title: (C, Y, t) => `Banished R${C} + L${Y} = ${t}`,
     fire_btn: '⫸ FIRE · BANISH 1 X',
     fire_sub: 'FIRE · RECOVER C',
-    shot_default: 'DEFAULT',
-    shot_sub: 'C-SUB',
+    shot_default: '⫸ FIRE',
+    shot_sub: '⫸ FIRE',
     targets_label: 'Targets Under Fire',
     target_pill_title: (n, k) => `Rank/Level ${n} — ${k} ${k === 1 ? 'way' : 'ways'} to reach. Click to highlight + see robustness.`,
     robustness_label: (n) => `R/L ${n} · robustness at T±3`,
@@ -2004,8 +2047,8 @@ const i18n = {
     sub_title: (C, Y, t) => `除外区 R${C} + L${Y} = ${t}`,
     fire_btn: '⫸ 开炮 · 除外 1 X',
     fire_sub: '开炮 · 取回 C',
-    shot_default: '默认',
-    shot_sub: 'C 代入',
+    shot_default: '⫸ 开炮',
+    shot_sub: '⫸ 开炮',
     targets_label: '当前可摧毁的目标',
     target_pill_title: (n, k) => `阶级/等级 ${n} — 共 ${k} 种打法。点击高亮方案 + 查看 T±3 可达性。`,
     robustness_label: (n) => `R/L ${n} · T±3 浮动可达性`,
@@ -2387,7 +2430,7 @@ function renderSolutions() {
         attrs: { type: 'button', title: t('sub_title', C, sol.Y, tv), 'data-fire-c': C },
       });
       subPill.appendChild(makeEl('span', { cls: 'shot-val', text: 'R/L ' + tv }));
-      subPill.appendChild(makeEl('span', { cls: 'shot-formula', text: `R${C}+L${sol.Y}` }));
+      subPill.appendChild(makeEl('span', { cls: 'shot-formula', text: `C${C}+L${sol.Y}` }));
       subPill.appendChild(makeEl('span', { cls: 'shot-fire', text: t('shot_sub') }));
       subPill.addEventListener('click', () => fireSolution(sol.X, sol.Y, C));
       optionsRow.appendChild(subPill);
@@ -2400,11 +2443,6 @@ function renderSolutions() {
     math.appendChild(makeEl('span', { cls: 'ok', text: total }));
     math.appendChild(document.createTextNode(' · X + Y = ' + sol.primaryTarget));
     card.appendChild(math);
-
-    // FIRE — banishes 1 X copy + 1 Y copy from Extra Deck → Banished.
-    const fireBtn = makeEl('button', { cls: 'fire-btn', text: t('fire_btn'), attrs: { type: 'button' } });
-    fireBtn.addEventListener('click', () => fireSolution(sol.X, sol.Y));
-    card.appendChild(fireBtn);
 
     grid.appendChild(card);
   });
